@@ -1,7 +1,9 @@
 use std::fmt;
+use rand::prelude::*;
 
 fn main() {
     println!("Hello, world!");
+
 
     #[derive(Debug)]
     struct Environment<TS, TA, TR, TT, TP> {
@@ -98,14 +100,28 @@ fn main() {
 
     let mut env = linear_world();
 
-    fn policy_iteration<TS: std::fmt::Debug,
-                        TA: std::fmt::Debug,
-                        TR: std::fmt::Debug,
-                        TT: std::fmt::Debug,
-                        TP: std::fmt::Debug>
+    fn policy_iteration<TS: fmt::Debug,
+                        TA: fmt::Debug,
+                        TR: fmt::Debug,
+                        TT: fmt::Debug,
+                        TP: fmt::Debug>
                         (env: Environment<TS, TA, TR, TT, TP>) {
 
-        print!("{:?}", env);
+        let theta: f32 = 0.000001;
+        let gamma: f32 = 0.999;
+        let S = env.S;
+        let A = env.A;
+        let R = env.R;
+        let T = env.T;
+        let p = env.p;
+
+        let mut rng = rand::thread_rng();
+
+        // TROUVER LA PUTAIN DE LONGUEUR DE S SA MERE
+        let len_S = len(S);
+        let mut V: Vec<f32> = (0..len_S).map(|_| rng.gen::<f32>()).collect();
+
+        println!("{:?}",V)
 
     }
 

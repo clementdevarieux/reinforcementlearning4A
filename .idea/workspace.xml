@@ -17,7 +17,8 @@
   <component name="ChangeListManager">
     <list default="true" id="c5cd50fc-e256-4444-a726-bc11d1a0c6e3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Exercice] CorrectionLineWorld Policy Evaluation.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/exemples_cours/[Exercice] CorrectionLineWorld Policy Evaluation.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -99,7 +100,7 @@
       <option name="presentableId" value="Default" />
       <updated>1714562913752</updated>
       <workItem from="1714562915160" duration="7069000" />
-      <workItem from="1714832286008" duration="1630000" />
+      <workItem from="1714832286008" duration="2642000" />
     </task>
     <servers />
   </component>
