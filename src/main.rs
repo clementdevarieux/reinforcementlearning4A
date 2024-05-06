@@ -1,9 +1,9 @@
 use std::fmt;
 use rand::prelude::*;
+use std::iter::IntoIterator;
+use rand::seq::SliceRandom;
 
 fn main() {
-    println!("Hello, world!");
-
 
     #[derive(Debug)]
     struct Environment<TS, TA, TR, TT, TP> {
@@ -14,18 +14,18 @@ fn main() {
         p: TP,
     }
 
-    fn linear_world() -> Environment<Vec<i8>,Vec<i8>,Vec<i8>,Vec<i8>,Vec<Vec<Vec<Vec<f32>>>>> {
+    fn linear_world() -> Environment<TS, TA, TR, TT, TP> {
         // CREATION DE L'ENVIRONNEMENT LINE WORLD
         // ensemble des états possibles
-        let mut S: Vec<i8> = vec![0, 1, 2, 3, 4];
+        let mut S  = vec![0, 1, 2, 3, 4];
         // ensemble des actions possibles, O gauche, 1 droite
-        let mut A: Vec<i8> = vec![0, 1];
+        let mut A= vec![0, 1];
         // ensemble des rewards possibles
-        let mut R: Vec<i8> = vec![-1, 0, 1];
+        let mut R = vec![-1, 0, 1];
         // ensemble des états terminaux
-        let mut T: Vec<i8> = vec![0, 4];
+        let mut T = vec![0, 4];
         // définition de p
-        let mut p: Vec<Vec<Vec<Vec<f32>>>> = vec![
+        let mut p= vec![
             vec![
                 vec![vec![0f32; R.len()]; S.len()];
                 A.len()
@@ -99,16 +99,18 @@ fn main() {
     }
 
     let mut env = linear_world();
+    let len_S: usize = env.S.len();
+    let len_A: usize = env.A.len();
 
     fn policy_iteration<TS: fmt::Debug,
                         TA: fmt::Debug,
                         TR: fmt::Debug,
                         TT: fmt::Debug,
                         TP: fmt::Debug>
-                        (env: Environment<TS, TA, TR, TT, TP>) {
+                        (env: Environment<TS, TA, TR, TT, TP>, len_S: usize, len_A: usize, theta: f32, gamma: f32)
+                        where TA: Iterator
+    {
 
-        let theta: f32 = 0.000001;
-        let gamma: f32 = 0.999;
         let S = env.S;
         let A = env.A;
         let R = env.R;
@@ -116,15 +118,24 @@ fn main() {
         let p = env.p;
 
         let mut rng = rand::thread_rng();
+        let mut V: Vec<f32> = Vec::with_capacity(len_S);
 
-        // TROUVER LA PUTAIN DE LONGUEUR DE S SA MERE
-        let len_S = len(S);
-        let mut V: Vec<f32> = (0..len_S).map(|_| rng.gen::<f32>()).collect();
+        for _ in 0..len_S {
+            V.push(rng.gen_range(0f32..1f32));
+        }
 
-        println!("{:?}",V)
+        let mut Pi= Vec::with_capacity(len_S);
+
+        for _ in 0..len_S {
+            Pi.push(A.choose(&mut rand::thread_rng())); // mettre des valeurs aléatoires de A
+        }
+
+
+        println!("{:?}", Pi);
+
 
     }
 
-    policy_iteration(env);
+    policy_iteration(env, len_S, len_A,0.00001, 0.999);
 
 }
