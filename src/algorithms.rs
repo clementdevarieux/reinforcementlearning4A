@@ -5,7 +5,13 @@ use rand::seq::SliceRandom;
 use std::cmp;
 use std::f32;
 
-pub fn policy_iteration(S: Vec<i32>, A:Vec<i32>, R:Vec<i32>, T:Vec<i32>, p:Vec<Vec<Vec<Vec<f32>>>>, theta: f32, gamma: f32) -> Vec<i32>{
+pub fn policy_iteration(S: Vec<i32>,
+                        A:Vec<i32>,
+                        R:Vec<i32>,
+                        T:Vec<i32>,
+                        p:Vec<Vec<Vec<Vec<f32>>>>,
+                        theta: f32,
+                        gamma: f32) -> Vec<i32> {
 
     let len_S= S.clone().len();
     let mut rng = rand::thread_rng();
@@ -81,4 +87,37 @@ pub fn policy_iteration(S: Vec<i32>, A:Vec<i32>, R:Vec<i32>, T:Vec<i32>, p:Vec<V
         }
     }
     return Pi
+}
+
+pub fn value_iteration(S: Vec<i32>,
+                       A:Vec<i32>,
+                       R:Vec<i32>,
+                       T:Vec<i32>,
+                       p:Vec<Vec<Vec<Vec<f32>>>>,
+                       theta: f32,
+                       gamma: f32) -> Vec<i32> {
+
+    let len_S= S.clone().len();
+    let mut rng = rand::thread_rng();
+    let mut V: Vec<f32> = Vec::with_capacity(len_S);
+
+    for i in 0..len_S {
+        if T.contains(&(i as i32)) {
+            V.push(0f32);
+        } else {
+            V.push(rng.gen_range(0f32..1f32));
+        }
+    }
+
+    let mut delta = 99999f32;
+
+    while delta >= theta {
+        delta = 0f32;
+        for s in S {
+            let mut v = V[s];
+
+        }
+    }
+
+    return
 }

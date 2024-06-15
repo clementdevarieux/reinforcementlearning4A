@@ -8,7 +8,7 @@ use rand::seq::SliceRandom;
 
 fn main() {
 
-    let (S, A, R, T, p) = environments::shifumi();
+    let (S, A, R, T, p) = environments::grid_world();
 
     // println!("{:?}", S)
 
