@@ -176,6 +176,5 @@ pub fn monte_carlo_es(S: Vec<i32>,
                       theta: f32,
                       gamma: f32) -> Vec<i32> {
 
-
-
+  pass
 }
