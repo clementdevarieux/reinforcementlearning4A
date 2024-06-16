@@ -15,14 +15,9 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c5cd50fc-e256-4444-a726-bc11d1a0c6e3" name="Changes" comment="grid world env python et affichage">
+    <list default="true" id="c5cd50fc-e256-4444-a726-bc11d1a0c6e3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python environments/grid_world.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/python environments/grid_world.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python environments/montyhall_5doors.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/python environments/montyhall_5doors.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python environments/montyhall_normal.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/python environments/montyhall_normal.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python environments/shifumi.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/python environments/shifumi.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/environments.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/environments.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/algorithms.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/algorithms.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,6 +70,7 @@
     &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
     &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
     &quot;org.rust.disableDetachedFileInspectionC:/Users/devar/Desktop/ESGI/master/M1/S2/reinforcementlearning4A/src/policy_iteration.rs&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;CPPToolchains&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -133,6 +129,7 @@
       <workItem from="1716195617231" duration="3877000" />
       <workItem from="1716469582771" duration="3580000" />
       <workItem from="1716473177179" duration="3188000" />
+      <workItem from="1718470503234" duration="874000" />
     </task>
     <task id="LOCAL-00001" summary="grid world env python et affichage">
       <option name="closed" value="true" />
