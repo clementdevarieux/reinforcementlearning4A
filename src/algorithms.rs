@@ -168,14 +168,13 @@ pub fn value_iteration(S: Vec<i32>,
     Pi
 }
 
-// pub fn monte_carlo_es(S: Vec<i32>,
-//                       A:Vec<i32>,
-//                       R:Vec<i32>,
-//                       T:Vec<i32>,
-//                       p:Vec<Vec<Vec<Vec<f32>>>>,
-//                       theta: f32,
-//                       gamma: f32) -> Vec<i32> {
-//
-//
-//
-// }
+pub fn monte_carlo_es(S: Vec<i32>,
+                      A:Vec<i32>,
+                      R:Vec<i32>,
+                      T:Vec<i32>,
+                      p:Vec<Vec<Vec<Vec<f32>>>>,
+                      theta: f32,
+                      gamma: f32) -> Vec<i32> {
+
+  pass
+}
