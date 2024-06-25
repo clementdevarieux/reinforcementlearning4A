@@ -1,3 +1,5 @@
+use rand::Rng;
+
 pub struct LineWorld{
     pub agent_pos: i32,
     pub num_states: i32,
@@ -6,12 +8,9 @@ pub struct LineWorld{
     pub A: Vec<i32>,
     pub R: Vec<i32>,
     pub T: Vec<i32>,
-    // pub p: Vec<Vec<Vec<Vec<f32>>>>
+    pub p: Vec<Vec<Vec<Vec<f32>>>>
 
 }
-
-/// TODO: Modifier les "if" par un "match"
-
 
 impl LineWorld {
     pub fn init() -> Self{
@@ -23,14 +22,34 @@ impl LineWorld {
             A: vec![0,1],
             R: vec![-1,0,1],
             T: vec![0,4],
-            // p: vec![
-            //     vec![
-            //         vec![vec![0f32; Self.R.len()]; Self.S.len()];
-            //         Self.A.len()
-            //     ];
-            //     Self.S.len()
-            // ];
+            p: {vec![
+                vec![
+                    vec![vec![0f32; 3]; 5];
+                    2
+                ];
+                5
+            ]}
         }
+    }
+
+    pub fn update_p(&mut self) {
+        for s in 0..self.S.len() {
+            for a in 0..self.A.len() {
+                for s_p in 0..self.S.len() {
+                    for r in 0..self.R.len() {
+                        if s_p == (s + 1) && a == 1 && self.R[r] == 0 && [1, 2].contains(&self.S[s]) {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        if s > 0 && s_p == (s - 1) && a == 0 && self.R[r] == 0 && [2, 3].contains(&self.S[s]) {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                    }
+                }
+            }
+        };
+
+        self.p[3][1][4][2] = 1f32;
+        self.p[1][0][0][0] = 1f32;
     }
 
     pub fn state_desc(&self) -> Vec<f32> {
@@ -46,29 +65,26 @@ impl LineWorld {
     }
 
     pub fn available_actions(&self) -> Vec<i32> {
-        if self.is_game_over(){
-            vec![]
-        } else {
-            vec![0, 1]
+        match self.is_game_over(){
+            true => vec![],
+            false => vec![0, 1]
         }
     }
 
     pub fn score(&self) -> f32 {
-        if self.agent_pos == 0 {
-            -1.0
-        } else if self.agent_pos == 4 {
-                1.0
-        } else {0.0}
+        match self.agent_pos {
+            0 => -1.0,
+            4 => 1.0,
+            _ => 0.0
+        }
     }
 
     pub fn step(&mut self, action: i32) {
-        assert!(self.A.contains(&action));
-        assert!(!self.is_game_over());
-
-        if action == 0 {
-            self.agent_pos -= 1;
-        } else {
-            self.agent_pos += 1;
+        if self.A.contains(&action) && !self.is_game_over() {
+            match action {
+                0 => self.agent_pos -= 1,
+                _ => self.agent_pos += 1
+            }
         }
     }
 
@@ -87,5 +103,102 @@ impl LineWorld {
         println!();
     }
 
+
+    pub fn policy_iteration(&mut self,
+                            theta: f32,
+                            gamma: f32) -> Vec<i32> {
+
+        let len_S: usize = self.num_states as usize;
+        let mut rng = rand::thread_rng();
+        let mut V: Vec<f32> = Vec::with_capacity(len_S);
+
+        for _ in 0..len_S {
+            V.push(rng.gen_range(0f32..1f32));
+        }
+
+        let mut Pi= Vec::with_capacity(len_S);
+
+        for _ in 0..len_S {
+            let random_index = rng.gen_range(0..self.num_actions) as usize;
+            Pi.push(self.A[random_index]); // mettre des valeurs aléatoires de A
+        }
+
+        loop {
+            // policy evaluation
+            loop {
+                let mut delta: f32 = 0.0;
+                for s in 0..len_S {
+                    self.agent_pos = s as i32;
+                    let mut v = V[s];
+                    let mut total: f32 = 0f32;
+                    for s_p in 0..len_S {
+                        for r in 0..self.R.len() {
+                            let mut p = 0.0f32;
+                            if !self.is_game_over() && (s_p == (s-1) || s_p == (s+1)){
+                                self.step(Pi[s]);
+                                if self.score() == r as f32 && self.agent_pos == s_p as i32 {
+                                    p = 1.0;
+                                }
+                            }
+
+                            total = total + p * (self.R[r] as f32 + gamma * V[s_p]);
+                        }
+                    }
+                    V[s] = total;
+                    delta = delta.max((v - V[s]).abs());
+                }
+                if delta < theta {
+                    break;
+                }
+            }
+
+            let mut policy_stable = true;
+
+            for s in 0..self.num_states {
+                if self.T.contains(&(s)) {
+                    continue;
+                }
+
+                let mut old_action = Pi[s as usize];
+
+                let mut argmax_a: i32 = -9999999;
+                let mut max_a: f32 = -9999999.0;
+
+                for a in 0..self.num_actions {
+                    let mut total: f32 = 0.0;
+                    let mut p = 0.0f32;
+                    self.step(a);
+                    for s_p in 0..self.num_states {
+                        for r_index in 0..self.R.len() {
+
+                            if !self.is_game_over() && (s_p == (s-1) || s_p == (s+1)){
+                                self.step(Pi[s as usize]);
+                                if self.score() == r_index as f32 && self.agent_pos == s_p {
+                                    p = 1.0;
+                                }
+                            }
+                            total += p * (self.R[r_index] as f32 + gamma * V[s_p as usize])
+                        }
+                    }
+
+                    if argmax_a == -9999999 || total >= max_a {
+                        argmax_a = a as i32;
+                        max_a = total;
+                    }
+                }
+
+                Pi[s as usize] = argmax_a;
+
+                if old_action != Pi[s as usize] {
+                    policy_stable = false;
+                }
+            }
+
+            if policy_stable {
+                break
+            }
+        }
+        return Pi
+    }
 }
 

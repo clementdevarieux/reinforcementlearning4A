@@ -9,25 +9,36 @@ use rand::seq::SliceRandom;
 
 fn main() {
 
+
+
     let mut lineworld = Env::LineWorld::LineWorld::init();
+    //
+    lineworld.update_p();
 
-    lineworld.step(0);
+    // println!("{:?}", lineworld.state_desc())
 
-    println!("{:?}", lineworld.state_desc());
+    println!("{:?}", lineworld.policy_iteration(0.0001f32, 0.999f32))
 
-    lineworld.step(0);
-
-    println!("{:?}", lineworld.state_desc());
-
-    println!("{}", lineworld.agent_pos);
-
-    println!("{:?}", lineworld.available_actions());
-
-    lineworld.display();
+    //
+    // print!("{:?}", lineworld.p[1][0][0])
+    // lineworld.step(0);
+    //
+    // println!("{:?}", lineworld.state_desc());
+    //
+    // lineworld.step(1);
+    //
+    // println!("{:?}", lineworld.state_desc());
+    //
+    // println!("{}", lineworld.agent_pos);
+    //
+    // println!("{:?}", lineworld.available_actions());
+    //
+    // lineworld.display();
 
     // println!("{:?}", lineworld.p);
 
 
+    // let (S, A, R, T, p) = environments::line_world();
     // let (S, A, R, T, p) = environments::shifumi();
     //
     // // println!("{:?}", S)
