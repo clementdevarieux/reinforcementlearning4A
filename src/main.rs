@@ -13,11 +13,11 @@ fn main() {
 
     let mut lineworld = Env::LineWorld::LineWorld::init();
     //
-    lineworld.update_p();
+    // lineworld.update_p();
 
-    // println!("{:?}", lineworld.state_desc())
+    println!("{:?}", lineworld.state_desc());
 
-    println!("{:?}", lineworld.policy_iteration(0.0001f32, 0.999f32))
+    println!("{:?}", lineworld.policy_iteration(0.0001f32, 0.999f32));
 
     //
     // print!("{:?}", lineworld.p[1][0][0])

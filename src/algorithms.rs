@@ -4,7 +4,7 @@ use std::iter::IntoIterator;
 use rand::seq::SliceRandom;
 use std::cmp;
 use std::f32;
-use tqdm::tqdm;
+// use tqdm::tqdm;
 
 pub fn policy_iteration(S: Vec<i32>,
                         A:Vec<i32>,
@@ -169,7 +169,7 @@ pub fn value_iteration(S: Vec<i32>,
     Pi
 }
 
-
+/*
 // TODO
 pub fn monte_carlo_exploring_starts(S: Vec<i32>,
                       A:Vec<i32>,
@@ -250,8 +250,6 @@ pub fn monte_carlo_exploring_starts(S: Vec<i32>,
     Pi
 }
 
-
-/*
 
 
 // TODO

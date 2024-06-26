@@ -9,7 +9,6 @@ pub struct LineWorld{
     pub R: Vec<i32>,
     pub T: Vec<i32>,
     pub p: Vec<Vec<Vec<Vec<f32>>>>
-
 }
 
 impl LineWorld {
@@ -103,7 +102,6 @@ impl LineWorld {
         println!();
     }
 
-
     pub fn policy_iteration(&mut self,
                             theta: f32,
                             gamma: f32) -> Vec<i32> {
@@ -123,25 +121,29 @@ impl LineWorld {
             Pi.push(self.A[random_index]); // mettre des valeurs aléatoires de A
         }
 
+        self.update_p();
         loop {
             // policy evaluation
             loop {
                 let mut delta: f32 = 0.0;
                 for s in 0..len_S {
-                    self.agent_pos = s as i32;
+                    // self.agent_pos = s as i32;
                     let mut v = V[s];
                     let mut total: f32 = 0f32;
                     for s_p in 0..len_S {
                         for r in 0..self.R.len() {
+                            /*
                             let mut p = 0.0f32;
                             if !self.is_game_over() && (s_p == (s-1) || s_p == (s+1)){
-                                self.step(Pi[s]);
-                                if self.score() == r as f32 && self.agent_pos == s_p as i32 {
-                                    p = 1.0;
+                                        self.step(Pi[s]);
+                                        if self.score() == r as f32 && self.agent_pos == s_p as i32 {
+                                            p = 1.0;
                                 }
                             }
 
-                            total = total + p * (self.R[r] as f32 + gamma * V[s_p]);
+                             */
+
+                            total = total + self.p[s][Pi[s] as usize][s_p][r] * (self.R[r] as f32 + gamma * V[s_p]);
                         }
                     }
                     V[s] = total;
@@ -166,18 +168,20 @@ impl LineWorld {
 
                 for a in 0..self.num_actions {
                     let mut total: f32 = 0.0;
-                    let mut p = 0.0f32;
-                    self.step(a);
+                    // let mut p = 0.0f32;
+                    // self.step(a);
                     for s_p in 0..self.num_states {
                         for r_index in 0..self.R.len() {
-
+                            /*
                             if !self.is_game_over() && (s_p == (s-1) || s_p == (s+1)){
                                 self.step(Pi[s as usize]);
                                 if self.score() == r_index as f32 && self.agent_pos == s_p {
                                     p = 1.0;
                                 }
                             }
-                            total += p * (self.R[r_index] as f32 + gamma * V[s_p as usize])
+
+                             */
+                            total += self.p[s as usize][a as usize][s_p as usize][r_index] * (self.R[r_index] as f32 + gamma * V[s_p as usize])
                         }
                     }
 
