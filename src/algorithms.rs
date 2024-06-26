@@ -4,6 +4,7 @@ use std::iter::IntoIterator;
 use rand::seq::SliceRandom;
 use std::cmp;
 use std::f32;
+use tqdm::tqdm;
 
 pub fn policy_iteration(S: Vec<i32>,
                         A:Vec<i32>,
@@ -168,13 +169,148 @@ pub fn value_iteration(S: Vec<i32>,
     Pi
 }
 
-pub fn monte_carlo_es(S: Vec<i32>,
+
+// TODO
+pub fn monte_carlo_exploring_starts(S: Vec<i32>,
                       A:Vec<i32>,
                       R:Vec<i32>,
                       T:Vec<i32>,
                       p:Vec<Vec<Vec<Vec<f32>>>>,
                       theta: f32,
-                      gamma: f32) -> Vec<i32> {
+                      gamma: f32,
+                      nb_iter: i32,
+                      max_steps: i32) -> Vec<i32> {
 
-  pass
+    let len_S= S.clone().len();
+    println!("len de S");
+    println!("{:?}", len_S);
+    let len_A = A.clone().len();
+    println!("len de A");
+    println!("{:?}",len_A);
+
+    let len_R = R.clone().len();
+
+    let mut rng = rand::thread_rng();
+
+    let mut Pi= Vec::with_capacity(len_S);
+
+    let mut q_s_a: Vec<Vec<f32>>= vec![vec![0.0;len_A]; len_S];
+
+    for s in 0..len_S {
+        for a in 0..len_A {
+            q_s_a[s][a] = rng.gen_range(-10.0..10.0);
+        }
+    }
+
+    let mut returns_s_a: Vec<Vec<Vec<usize>>>= vec![vec![vec![];len_A]; len_S];
+
+    println!("{:?}",returns_s_a);
+
+    for _ in tqdm(0..nb_iter) {
+        let mut is_first_action: bool = true;
+        let mut trajectory: Vec<usize> = vec![];
+        let mut steps_count: i32 = 0;
+        let mut prev_score: i32 = 0;
+        while steps_count < max_steps {
+            let mut s:i32 = rng.gen_range(0..len_S) as i32;
+
+            let aa = A.clone();
+
+            if !Pi.contains(&s) {
+                let random_index = rng.gen_range(0..A.len());
+                Pi[s] = A[random_index];
+            }
+
+            if is_first_action {
+                let mut a:i32 = rng.gen_range(0..len_A) as i32;
+                is_first_action = false;
+            } else {
+                let mut a:i32 = Pi[s];
+            }
+
+            let mut score:i32 = 0;
+            for s_p in 0..len_S {
+                for r in 0..len_R {
+                    score = score + p[s][a][s_p][r] * R[r];
+                }
+            }
+
+            let mut reward = score - prev_score;
+            prev_score = score;
+
+            trajectory = trajectory.push((s, a, reward, ))
+
+
+            if T.contains(&s) {
+                break;
+            }
+        }
+    }
+
+    Pi
 }
+
+
+/*
+
+
+// TODO
+pub fn monte_carlo_on_policy_first_visit(S: Vec<i32>,
+                                         A:Vec<i32>,
+                                         R:Vec<i32>,
+                                         T:Vec<i32>,
+                                         p:Vec<Vec<Vec<Vec<f32>>>>,
+                                         theta: f32,
+                                         gamma: f32) -> Vec<i32> {
+
+    pass
+}
+
+// TODO
+pub fn monte_carlo_off_policy_control(S: Vec<i32>,
+                                         A:Vec<i32>,
+                                         R:Vec<i32>,
+                                         T:Vec<i32>,
+                                         p:Vec<Vec<Vec<Vec<f32>>>>,
+                                         theta: f32,
+                                         gamma: f32) -> Vec<i32> {
+
+    pass
+}
+
+// TODO
+pub fn sarsa(S: Vec<i32>,
+                                      A:Vec<i32>,
+                                      R:Vec<i32>,
+                                      T:Vec<i32>,
+                                      p:Vec<Vec<Vec<Vec<f32>>>>,
+                                      theta: f32,
+                                      gamma: f32) -> Vec<i32> {
+
+    pass
+}
+
+// TODO
+pub fn q_learning(S: Vec<i32>,
+             A:Vec<i32>,
+             R:Vec<i32>,
+             T:Vec<i32>,
+             p:Vec<Vec<Vec<Vec<f32>>>>,
+             theta: f32,
+             gamma: f32) -> Vec<i32> {
+
+    pass
+}
+
+// TODO
+pub fn dyna_q(S: Vec<i32>,
+             A:Vec<i32>,
+             R:Vec<i32>,
+             T:Vec<i32>,
+             p:Vec<Vec<Vec<Vec<f32>>>>,
+             theta: f32,
+             gamma: f32) -> Vec<i32> {
+
+    pass
+}
+*/

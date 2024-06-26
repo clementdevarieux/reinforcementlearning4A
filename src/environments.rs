@@ -291,3 +291,6 @@ pub fn montyhall_standard() -> (Vec<i32>, Vec<i32>, Vec<i32>, Vec<i32>, Vec<Vec<
 
     return (S, A, R, T, p);
 }
+
+// TODO
+// tester les secrets envs aussi
