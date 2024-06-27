@@ -51,6 +51,11 @@ impl LineWorld {
         self.p[1][0][0][0] = 1f32;
     }
 
+    pub fn from_random_state(&mut self) {
+        let mut rng = rand::thread_rng();
+        self.agent_pos = rng.gen_range(1..4)
+    }
+
     pub fn state_desc(&self) -> Vec<f32> {
         let mut one_hot = vec![0.0; self.num_states as usize];
         one_hot[self.agent_pos as usize] = 1.0;
@@ -279,6 +284,77 @@ impl LineWorld {
         }
 
         Pi
+    }
+
+
+    pub fn monte_carlo_exploring_starts(&mut self,
+                                        theta: f32,
+                                        gamma: f32,
+                                        nb_iter: i32,
+                                        max_steps: i32) -> Vec<i32> {
+
+
+        self.update_p();
+
+        let len_S= self.num_states as usize;
+        let len_A = self.A.len();
+        let len_R = self.R.len();
+        let mut rng = rand::thread_rng();
+
+        let mut Pi = Vec::with_capacity(len_S);
+
+        let mut q_s_a: Vec<Vec<f32>>= vec![vec![0.0;len_A]; len_S];
+
+        for s in 0..len_S {
+            for a in 0..len_A {
+                q_s_a[s][a] = rng.gen_range(-10.0..10.0);
+            }
+        }
+
+        let mut returns_s_a: Vec<Vec<Vec<usize>>>= vec![vec![vec![];len_A]; len_S];
+
+        for _ in 0..nb_iter {
+            self.from_random_state();
+            let mut is_first_action: bool = true;
+            let mut trajectory: Vec<(usize, usize, i32, Vec<usize>)> = Vec::new();
+            let mut steps_count: i32 = 0;
+            let mut prev_score: i32 = 0;
+            while steps_count < max_steps && !self.is_game_over(){
+                let mut s = self.agent_pos;
+                let mut aa = self.available_actions();
+
+                if !Pi.contains(&s){
+                    let random_index = rng.gen_range(0..aa.len());
+                    Pi[s] = aa[random_index];
+                }
+
+                if is_first_action {
+                    let random_index = rng.gen_range(0..aa.len());
+                    let mut a = aa[random_index];
+                    is_first_action = false;
+                } else {
+                    let mut a = Pi[s];
+                }
+
+                let mut prev_score = self.score();
+                self.step(a);
+                let mut r = self.score() - prev_score;
+
+                trajectory.push((s, a, r, aa));
+
+                steps_count += 1;
+            }
+
+            let mut G = 0.0;
+
+            for (t, (s, a, r, aa)) in trajectory.iter().rev().enumerate() {
+                G = gamma * G + *r as f32;
+
+
+        }
+
+
+        pass
     }
 
 }
