@@ -1,5 +1,6 @@
 use rand::Rng;
 use std::collections::HashMap;
+use std::io::Write;
 use colored::*;
 
 pub struct GridWorld {
@@ -255,14 +256,21 @@ impl GridWorld {
         }
     }
 
-    pub fn run_game_hashmap(&mut self, Pi: HashMap<i32,i32>){
+    pub fn run_game_hashmap(&mut self, Pi: HashMap<i32, i32>) {
         println!("Etat initial :\n");
+        self.reset();
         self.display();
         println!("\n");
         let mut step: i32 = 1;
-        while !self.is_game_over() {
-            println!("Step {:?}: \n",step);
-            self.step(Pi.get(&self.agent_pos));
+        while !self.is_game_over() && step <= 50 {
+            println!("Step {:?}: \n", step);
+            if let Some(&action) = Pi.get(&self.agent_pos) {
+                println!("Action for position {}: {}", self.agent_pos, action);
+                self.step(action);
+            } else {
+                println!("No action found for position {}. Ending game.", self.agent_pos);
+                break;
+            }
             self.display();
             println!("\n");
             step += 1;

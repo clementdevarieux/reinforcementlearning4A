@@ -21,11 +21,11 @@ fn main() {
         }
     }
 
-     let mut lineworld = Env::LineWorld::LineWorld::init();
+    let mut lineworld = Env::LineWorld::LineWorld::init();
 
     let mut grid = Env::GridWorld::GridWorld::init();
 
-    // gridwold.display();
+    grid.display();
     // for _ in 0..10 {
     //     println!("coucou");
     //     let res = grid.monte_carlo_exploring_starts(0.99999f32, 10000, 10);
@@ -33,7 +33,7 @@ fn main() {
     // }
     //println!("{:?}", res);
 
-    let res = grid.monte_carlo_exploring_starts(0.99999f32, 10000, 10);
+    let res = grid.monte_carlo_exploring_starts(0.9999f32, 10000, 10);
     grid.run_game_hashmap(res);
 
     // gridwold.step(1);
