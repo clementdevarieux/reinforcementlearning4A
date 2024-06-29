@@ -1,7 +1,8 @@
 use rand::Rng;
 use std::collections::HashMap;
+use colored::*;
 
-pub struct LineWorld {
+pub struct GridWorld {
     pub agent_pos: i32,
     pub num_states: i32,
     pub num_actions: i32,
@@ -12,23 +13,26 @@ pub struct LineWorld {
     pub p: Vec<Vec<Vec<Vec<f32>>>>
 }
 
-impl LineWorld {
-    pub fn init() -> Self{
+
+impl GridWorld {
+    pub fn init() -> Self {
         Self {
-            agent_pos: 2,
-            num_states: 5,
-            num_actions: 2,
-            S: vec![0, 1, 2, 3, 4],
-            A: vec![0,1],
-            R: vec![-1,0,1],
-            T: vec![0,4],
-            p: {vec![
+            agent_pos: 8,
+            num_states: 49,
+            num_actions: 4,
+            S: (0..49).collect(),
+            A: vec![0, 1, 2, 3], // left right up down
+            R: vec![-3, -1, 0, 1],
+            T: vec![0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 14, 20, 21, 27, 28, 34, 35, 40, 41, 42, 43, 44, 45, 46, 47, 48],
+            p: {
                 vec![
-                    vec![vec![0f32; 3]; 5];
-                    2
-                ];
-                5
-            ]}
+                    vec![
+                        vec![vec![0f32; 4]; 49];
+                        4
+                    ];
+                    49
+                ]
+            }
         }
     }
 
@@ -37,24 +41,124 @@ impl LineWorld {
             for a in 0..self.A.len() {
                 for s_p in 0..self.S.len() {
                     for r in 0..self.R.len() {
-                        if s_p == (s + 1) && a == 1 && self.R[r] == 0 && [1, 2].contains(&self.S[s]) {
+                        // actions terminales :
+                        // si on monte depuis la premiere ligne :
+                        if 7 < s && s < 12 && a == 2 && s_p == s - 7 && self.R[r] == -1 {
                             self.p[s][a][s_p][r] = 1f32;
                         }
-                        if s > 0 && s_p == (s - 1) && a == 0 && self.R[r] == 0 && [2, 3].contains(&self.S[s]) {
+                        // si on descend depuis la derniere ligne :
+                        if 35 < s && s < 40 && a == 3 && s_p == s + 7 && self.R[r] == -1 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on va à gauche depuis la première colonne :
+                        if s % 7 == 1 && 7 < s && s < 37 && a == 0 && s_p == s - 1 && self.R[r] == -1 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on va à droite depuis la dernière colonne :
+                        if s % 7 == 5 && 7 < s && s < 37 && a == 1 && s_p == s + 1 && self.R[r] == -1 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+
+                        // actions banales :
+                        // si on est sur la premiere ligne:
+                        // si on descend
+                        if 7 < s && s < 12 && a == 3 && s_p == s + 7 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on va à gauche
+                        if 8 < s && s < 12 && a == 0 && s_p == s - 1 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on va à droite
+                        if 7 < s && s < 11 && a == 1 && s_p == s + 1 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+
+                        // si on est sur la deuxième ligne:
+                        // si on monte
+                        if 14 < s && s < 19 && a == 2 && s_p == s - 7 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on descend
+                        if 14 < s && s < 20 && a == 3 && s_p == s + 7 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on va à droite
+                        if 14 < s && s < 19 && a == 1 && s_p == s + 1 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on va à gauche
+                        if 15 < s && s < 20 && a == 0 && s_p == s - 1 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+
+                        // si on est sur la troisième ligne:
+                        // si on monte
+                        if 21 < s && s < 27 && a == 2 && s_p == s - 7 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on descend
+                        if 21 < s && s < 27 && a == 3 && s_p == s + 7 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on va à gauche
+                        if 22 < s && s < 27 && a == 0 && s_p == s - 1 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on va à droite
+                        if 21 < s && s < 26 && a == 1 && s_p == s + 1 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+
+                        // si on est sur la quatrième ligne:
+                        // si on monte
+                        if 28 < s && s < 34 && a == 2 && s_p == s - 7 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on descend
+                        if 28 < s && s < 33 && a == 3 && s_p == s + 7 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on va à gauche
+                        if 29 < s && s < 34 && a == 0 && s_p == s - 1 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on va à droite
+                        if 28 < s && s < 33 && a == 1 && s_p == s + 1 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+
+                        // si on est sur la dernière ligne
+                        // si on monte
+                        if 35 < s && s < 40 && a == 2 && s_p == s - 7 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on va à gauche
+                        if 36 < s && s < 40 && a == 0 && s_p == s - 1 && self.R[r] == 0 {
+                            self.p[s][a][s_p][r] = 1f32;
+                        }
+                        // si on va à droite
+                        if 35 < s && s < 39 && a == 0 && s_p == s - 1 && self.R[r] == 0 {
                             self.p[s][a][s_p][r] = 1f32;
                         }
                     }
                 }
             }
-        };
-
-        self.p[3][1][4][2] = 1f32;
-        self.p[1][0][0][0] = 1f32;
+        }
+        self.p[11][1][12][0] = 1f32;
+        self.p[19][2][12][0] = 1f32;
+        self.p[39][1][40][3] = 1f32;
+        self.p[33][3][40][3] = 1f32;
     }
 
+
     pub fn from_random_state(&mut self) {
+        let ok_states: Vec<i32> = vec![8, 9, 10, 11, 15, 16,
+                                       17, 18, 19, 22, 23,
+                                       24, 25, 26, 29, 30,
+                                       31, 32, 33, 36, 37, 38, 39];
         let mut rng = rand::thread_rng();
-        self.agent_pos = rng.gen_range(1..4)
+        self.agent_pos = ok_states[rng.gen_range(0..ok_states.len())]
     }
 
     pub fn state_desc(&self) -> Vec<f32> {
@@ -64,7 +168,7 @@ impl LineWorld {
     }
 
     pub fn is_game_over(&self) -> bool {
-        if self.agent_pos == 0 || self.agent_pos == 4 {
+        if self.T.contains(&self.agent_pos){
             true
         } else {false}
     }
@@ -72,15 +176,24 @@ impl LineWorld {
     pub fn available_actions(&self) -> Vec<i32> {
         match self.is_game_over(){
             true => vec![],
-            false => vec![0, 1]
+            false => vec![0, 1, 2, 3]
         }
     }
 
-    pub fn score(&self) -> f32 {
-        match self.agent_pos {
-            0 => -1.0,
-            4 => 1.0,
-            _ => 0.0
+    pub fn score(&self) -> i32 {
+        let minus_1: Vec<i32> = vec![0, 1, 2, 3, 4, 5, 6, 7,
+                                     13, 14, 20, 21, 27,
+                                     28, 34, 35, 41, 42,
+                                     43, 44, 45, 46, 47, 48];
+
+        if minus_1.contains(&self.agent_pos) {
+            -1
+        } else if self.agent_pos == 12 {
+            -3
+        } else if self.agent_pos == 40 {
+            1
+        } else {
+            0
         }
     }
 
@@ -88,21 +201,41 @@ impl LineWorld {
         if self.A.contains(&action) && !self.is_game_over() {
             match action {
                 0 => self.agent_pos -= 1,
-                _ => self.agent_pos += 1
+                1 => self.agent_pos += 1,
+                2 => self.agent_pos -= 7,
+                _ => self.agent_pos += 7
             }
         }
     }
 
     pub fn reset(&mut self) {
-        self.agent_pos = 2;
+        self.agent_pos = 8;
     }
 
+
     pub fn display(&self) {
-        for i in 0..5 {
-            if i == self.agent_pos{
-                print!("X");
+        let left_side: Vec<i32> = vec![7, 14, 21, 28, 35];
+        let right_side: Vec<i32> = vec![13, 20, 27, 34, 41];
+        let top_bottom: Vec<i32> = vec![1, 2, 3, 4, 5, 43, 44, 45, 45, 46, 47];
+        for i in 0..49 {
+            if i == self.agent_pos {
+                print!("{}", " X ".red());
+            } else if left_side.contains(&i){
+                print!("{}", "| ".green());
+            } else if right_side.contains(&i){
+                print!("{}", " |\n".green());
+            } else if top_bottom.contains(&i){
+                print!("{}", "---".green());
+            } else if i == 0 {
+                print!("{}", "/ ".green());
+            } else if  i == 48 {
+                print!("{}", " /".green());
+            } else if i == 6 {
+                print!("{}", " \\\n".green());
+            } else if i == 42 {
+                print!("{}", "\\ ".green());
             } else {
-                print!("_");
+                print!("{}", " 0 ".blue());
             }
         }
         println!();
@@ -116,6 +249,20 @@ impl LineWorld {
         while !self.is_game_over() {
             println!("Step {:?}: \n",step);
             self.step(Pi[self.agent_pos as usize]);
+            self.display();
+            println!("\n");
+            step += 1;
+        }
+    }
+
+    pub fn run_game_hashmap(&mut self, Pi: HashMap<i32,i32>){
+        println!("Etat initial :\n");
+        self.display();
+        println!("\n");
+        let mut step: i32 = 1;
+        while !self.is_game_over() {
+            println!("Step {:?}: \n",step);
+            self.step(Pi.get(&self.agent_pos));
             self.display();
             println!("\n");
             step += 1;
@@ -225,7 +372,6 @@ impl LineWorld {
         return Pi
     }
 
-
     pub fn value_iteration(&mut self,
                            theta: f32,
                            gamma: f32) -> Vec<i32> {
@@ -302,118 +448,6 @@ impl LineWorld {
     }
 
 
-    // pub fn monte_carlo_exploring_starts(&mut self,
-    //                                     gamma: f32,
-    //                                     nb_iter: i32,
-    //                                     max_steps: i32) -> HashMap<i32, i32> {
-    //
-    //
-    //     // self.update_p();
-    //
-    //     let len_S= self.num_states as usize;
-    //     let len_A = self.A.len();
-    //     let len_R = self.R.len();
-    //     let mut rng = rand::thread_rng();
-    //
-    //     let mut Pi = HashMap::new();
-    //
-    //     // let mut q_s_a: Vec<Vec<f32>>= vec![vec![0.0;len_A]; len_S];
-    //     // let mut Q = HashMap::new();
-    //     let mut Q: HashMap<(i32, i32), f32> = HashMap::new();
-    //
-    //
-    //     // for s in 0..len_S {
-    //     //     for a in 0..len_A {
-    //     //         q_s_a[s][a] = rng.gen_range(-10.0..10.0);
-    //     //     }
-    //     // }
-    //
-    //     // let mut returns_s_a: Vec<Vec<Vec<usize>>>= vec![vec![vec![];len_A]; len_S];
-    //
-    //     let mut returns = HashMap::new();
-    //
-    //     for _ in 0..nb_iter {
-    //         self.from_random_state();
-    //
-    //         let mut is_first_action: bool = true;
-    //         let mut trajectory: Vec<(i32, i32, f32, Vec<i32>)> = Vec::new();
-    //         let mut steps_count: i32 = 0;
-    //         // let mut prev_score: i32 = 0;
-    //         while steps_count < max_steps && !self.is_game_over() {
-    //             let mut s = self.agent_pos;
-    //             let mut aa = self.available_actions();
-    //
-    //             if !Pi.contains_key(&s) {
-    //                 let random_index = rng.gen_range(0..aa.len());
-    //                 Pi.insert(s, aa[random_index]);
-    //             }
-    //
-    //             let mut a : i32 = 0;
-    //
-    //             if is_first_action {
-    //                 let random_index = rng.gen_range(0..aa.len());
-    //                 a = aa[random_index];
-    //                 is_first_action = false;
-    //             } else {
-    //                 a = Pi[&s];
-    //             }
-    //
-    //             let prev_score = self.score();
-    //             self.step(a);
-    //             let mut r = self.score() - prev_score;
-    //
-    //             trajectory.push((s, a, r, aa));
-    //
-    //             steps_count += 1;
-    //         }
-    //
-    //         let mut G = 0.0;
-    //
-    //         for (t, (s, a, r, aa)) in trajectory.iter().rev().enumerate() {
-    //             G = gamma * G + r;
-    //
-    //             if trajectory.iter().take(t).all(|triplet| triplet.0 != s.clone() || triplet.1 != a.clone()) {
-    //                 if !returns.contains_key(&(s.clone(), a.clone())){
-    //                     returns.insert((s.clone(), a.clone()), Vec::new());
-    //                 }
-    //
-    //                 returns.get(&(s.clone(), a.clone())).expect("REASON").push(G);
-    //
-    //                 let mut sum = 0f32;
-    //
-    //                 for (key, value_list) in &returns {
-    //                     for value in value_list {
-    //                         sum += value.clone();
-    //                     }
-    //                 }
-    //
-    //                 let mean :f32 = sum / returns.len() as f32;
-    //
-    //                 Q.insert((s.clone(), a.clone()), mean);
-    //
-    //                 let mut best_a : i32 = -1000000;
-    //
-    //                 let mut best_a_score: Option<f32> = Option::from(0.0f32);
-    //
-    //                 for a in aa{
-    //                     if !Q.contains_key(&(*s, *a)){
-    //                         Q.insert((s.clone(), a.clone()), rng.gen());
-    //                     }
-    //                     if best_a == -1000000 || Q.get(&(*s, *a)) > Option::from(&best_a_score) {
-    //                         best_a = *a;
-    //                         best_a_score = Q.get(&(*s, *a)).cloned();
-    //                     }
-    //                 }
-    //
-    //                 Pi.insert(s.clone(), best_a);
-    //
-    //             }
-    //         }
-    //
-    //     }
-    //     Pi
-    // }
-
     pub fn monte_carlo_exploring_starts(&mut self,
                                         gamma: f32,
                                         nb_iter: i32,
@@ -455,7 +489,7 @@ impl LineWorld {
                 self.step(a);
                 let r = self.score() - prev_score;
 
-                trajectory.push((s, a, r, aa));
+                trajectory.push((s, a, r as f32, aa));
                 steps_count += 1;
             }
 
@@ -492,7 +526,4 @@ impl LineWorld {
         }
         Pi
     }
-
-
 }
-

@@ -169,7 +169,7 @@ pub fn value_iteration(S: Vec<i32>,
     Pi
 }
 
-
+/*
 // TODO
 pub fn monte_carlo_exploring_starts(S: Vec<i32>,
                       A:Vec<i32>,
@@ -249,8 +249,6 @@ pub fn monte_carlo_exploring_starts(S: Vec<i32>,
 
     Pi
 }
-
-/*
 
 
 // TODO
