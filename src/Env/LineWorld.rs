@@ -322,126 +322,11 @@ impl LineWorld {
         Pi
     }
 
-
-    // pub fn monte_carlo_exploring_starts(&mut self,
-    //                                     gamma: f32,
-    //                                     nb_iter: i32,
-    //                                     max_steps: i32) -> HashMap<i32, i32> {
-    //
-    //
-    //     // self.update_p();
-    //
-    //     let len_S= self.num_states as usize;
-    //     let len_A = self.A.len();
-    //     let len_R = self.R.len();
-    //     let mut rng = rand::thread_rng();
-    //
-    //     let mut Pi = HashMap::new();
-    //
-    //     // let mut q_s_a: Vec<Vec<f32>>= vec![vec![0.0;len_A]; len_S];
-    //     // let mut Q = HashMap::new();
-    //     let mut Q: HashMap<(i32, i32), f32> = HashMap::new();
-    //
-    //
-    //     // for s in 0..len_S {
-    //     //     for a in 0..len_A {
-    //     //         q_s_a[s][a] = rng.gen_range(-10.0..10.0);
-    //     //     }
-    //     // }
-    //
-    //     // let mut returns_s_a: Vec<Vec<Vec<usize>>>= vec![vec![vec![];len_A]; len_S];
-    //
-    //     let mut returns = HashMap::new();
-    //
-    //     for _ in 0..nb_iter {
-    //         self.from_random_state();
-    //
-    //         let mut is_first_action: bool = true;
-    //         let mut trajectory: Vec<(i32, i32, f32, Vec<i32>)> = Vec::new();
-    //         let mut steps_count: i32 = 0;
-    //         // let mut prev_score: i32 = 0;
-    //         while steps_count < max_steps && !self.is_game_over() {
-    //             let mut s = self.agent_pos;
-    //             let mut aa = self.available_actions();
-    //
-    //             if !Pi.contains_key(&s) {
-    //                 let random_index = rng.gen_range(0..aa.len());
-    //                 Pi.insert(s, aa[random_index]);
-    //             }
-    //
-    //             let mut a : i32 = 0;
-    //
-    //             if is_first_action {
-    //                 let random_index = rng.gen_range(0..aa.len());
-    //                 a = aa[random_index];
-    //                 is_first_action = false;
-    //             } else {
-    //                 a = Pi[&s];
-    //             }
-    //
-    //             let prev_score = self.score();
-    //             self.step(a);
-    //             let mut r = self.score() - prev_score;
-    //
-    //             trajectory.push((s, a, r, aa));
-    //
-    //             steps_count += 1;
-    //         }
-    //
-    //         let mut G = 0.0;
-    //
-    //         for (t, (s, a, r, aa)) in trajectory.iter().rev().enumerate() {
-    //             G = gamma * G + r;
-    //
-    //             if trajectory.iter().take(t).all(|triplet| triplet.0 != s.clone() || triplet.1 != a.clone()) {
-    //                 if !returns.contains_key(&(s.clone(), a.clone())){
-    //                     returns.insert((s.clone(), a.clone()), Vec::new());
-    //                 }
-    //
-    //                 returns.get(&(s.clone(), a.clone())).expect("REASON").push(G);
-    //
-    //                 let mut sum = 0f32;
-    //
-    //                 for (key, value_list) in &returns {
-    //                     for value in value_list {
-    //                         sum += value.clone();
-    //                     }
-    //                 }
-    //
-    //                 let mean :f32 = sum / returns.len() as f32;
-    //
-    //                 Q.insert((s.clone(), a.clone()), mean);
-    //
-    //                 let mut best_a : i32 = -1000000;
-    //
-    //                 let mut best_a_score: Option<f32> = Option::from(0.0f32);
-    //
-    //                 for a in aa{
-    //                     if !Q.contains_key(&(*s, *a)){
-    //                         Q.insert((s.clone(), a.clone()), rng.gen());
-    //                     }
-    //                     if best_a == -1000000 || Q.get(&(*s, *a)) > Option::from(&best_a_score) {
-    //                         best_a = *a;
-    //                         best_a_score = Q.get(&(*s, *a)).cloned();
-    //                     }
-    //                 }
-    //
-    //                 Pi.insert(s.clone(), best_a);
-    //
-    //             }
-    //         }
-    //
-    //     }
-    //     Pi
-    // }
-
     pub fn monte_carlo_exploring_starts(&mut self,
                                         gamma: f32,
                                         nb_iter: i32,
                                         max_steps: i32) -> HashMap<i32, i32> {
-        let len_S = self.num_states as usize;
-        let len_A = self.A.len();
-        let len_R = self.R.len();
+
         let mut rng = rand::thread_rng();
 
         let mut Pi = HashMap::new();
@@ -461,7 +346,7 @@ impl LineWorld {
 
                 if !Pi.contains_key(&s) {
                     let random_index = rng.gen_range(0..aa.len());
-                    Pi.insert(s, aa[random_index]);
+                    Pi.insert(s.clone(), aa[random_index]);
                 }
 
                 let a = if is_first_action {
@@ -481,11 +366,24 @@ impl LineWorld {
             }
 
             let mut G = 0.0;
+            let mut t = trajectory.len() - 1;
 
-            for (t, (s, a, r, aa)) in trajectory.iter().rev().enumerate() {
+            for ((s, a, r, aa)) in trajectory.iter().rev() {
                 G = gamma * G + r;
 
-                if trajectory.iter().take(t).all(|triplet| triplet.0 != *s || triplet.1 != *a) {
+
+                let mut is_in = false;
+                if t > 1 {
+                    for (s_t, a_t, c_t, d_t) in Vec::from(&trajectory[..t]) {
+                        if s_t == *s && a_t == *a {
+                            is_in = true;
+                            break;
+                        }
+                    }
+                    t -= 1;
+                }
+
+                if !is_in{
                     let entry = returns.entry((*s, *a)).or_insert(Vec::new());
                     entry.push(G);
 
@@ -494,26 +392,24 @@ impl LineWorld {
 
                     Q.insert((*s, *a), mean);
 
-                    let mut best_a: i32 = -1000000;
+                    let mut best_a: Option<i32> = None;
                     let mut best_a_score: Option<f32> = None;
 
                     for &a in aa {
                         if !Q.contains_key(&(*s, a)) {
                             Q.insert((*s, a), rng.gen());
                         }
-                        if best_a == -1000000 || Q.get(&(*s, a)) > best_a_score.as_ref() {
-                            best_a = a;
+                        if best_a == None || Q.get(&(*s, a)) > best_a_score.as_ref() {
+                            best_a = Option::from(a);
                             best_a_score = Q.get(&(*s, a)).cloned();
                         }
                     }
 
-                    Pi.insert(*s, best_a);
+                    Pi.insert(*s, best_a.unwrap());
                 }
             }
         }
         Pi
     }
-
-
 }
 

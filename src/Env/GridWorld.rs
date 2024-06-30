@@ -455,7 +455,6 @@ impl GridWorld {
         Pi
     }
 
-
     pub fn monte_carlo_exploring_starts(&mut self,
                                         gamma: f32,
                                         nb_iter: i32,
@@ -482,7 +481,7 @@ impl GridWorld {
 
                 if !Pi.contains_key(&s) {
                     let random_index = rng.gen_range(0..aa.len());
-                    Pi.insert(s, aa[random_index]);
+                    Pi.insert(s.clone(), aa[random_index]);
                 }
 
                 let a = if is_first_action {
@@ -502,11 +501,25 @@ impl GridWorld {
             }
 
             let mut G = 0.0;
+            let mut t = trajectory.len() - 1;
 
-            for (t, (s, a, r, aa)) in trajectory.iter().rev().enumerate() {
+            for ((s, a, r, aa)) in trajectory.iter().rev() {
                 G = gamma * G + r;
 
-                if trajectory.iter().take(t).all(|triplet| triplet.0 != *s || triplet.1 != *a) {
+
+                let mut is_in = false;
+                if t > 1 {
+                    for (s_t, a_t, c_t, d_t) in Vec::from(&trajectory[..t]) {
+                        if s_t == *s && a_t == *a {
+                            is_in = true;
+                            break;
+                        }
+                    }
+                    t -= 1;
+                }
+
+                if !is_in{
+
                     let entry = returns.entry((*s, *a)).or_insert(Vec::new());
                     entry.push(G);
 
@@ -515,23 +528,26 @@ impl GridWorld {
 
                     Q.insert((*s, *a), mean);
 
-                    let mut best_a: i32 = -1000000;
+                    let mut best_a: Option<i32> = None;
                     let mut best_a_score: Option<f32> = None;
 
                     for &a in aa {
                         if !Q.contains_key(&(*s, a)) {
                             Q.insert((*s, a), rng.gen());
                         }
-                        if best_a == -1000000 || Q.get(&(*s, a)) > best_a_score.as_ref() {
-                            best_a = a;
+                        if best_a == None || Q.get(&(*s, a)) > best_a_score.as_ref() {
+                            best_a = Option::from(a);
                             best_a_score = Q.get(&(*s, a)).cloned();
                         }
                     }
 
-                    Pi.insert(*s, best_a);
+                    Pi.insert(*s, best_a.unwrap());
                 }
             }
+
         }
+
         Pi
     }
+
 }
