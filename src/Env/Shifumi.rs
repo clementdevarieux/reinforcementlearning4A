@@ -19,7 +19,7 @@ impl Shifumi {
         Self {
             agent_pos: 0,
             num_states: 37,
-            num_actions: 4,
+            num_actions: 3,
             S: (0..37).collect(),
             A: vec![0, 1, 2], // P F C
             R: vec![-1, 0, 1],
@@ -37,53 +37,45 @@ impl Shifumi {
     }
 
     pub fn update_p(&mut self) {
-        self.pp[0][0][1][1] = 1f32/3f32; //# PP
-        self.pp[0][0][2][0] = 1f32/3f32; //# PF
-        self.pp[0][0][3][2] = 1f32/3f32; //# PC
-
-        self.pp[0][1][4][2] = 1f32/3f32; //# FP
-        self.pp[0][1][5][1] = 1f32/3f32; // # FF
-        self.pp[0][1][6][0] = 1f32/3f32; // # FC
-
-        self.pp[0][2][7][0] = 1f32/3f32; // # CP
-        self.pp[0][2][8][2] = 1f32/3f32; // # CF
-        self.pp[0][2][9][1] = 1f32/3f32; // # CC
-        // ###############
-        self.pp[1][0][10][1] = 1f32; // # PP PP
-        self.pp[1][1][11][2] = 1f32; // # PP FP
-        self.pp[1][2][12][0] = 1f32; // # PP CP
-
-        self.pp[2][0][13][1] = 1f32; // # PF PP
-        self.pp[2][1][14][2] = 1f32; // # PF FP
-        self.pp[2][2][15][0] = 1f32; // # PF CP
-
-        self.pp[3][0][16][1] = 1f32; // # PC PP
-        self.pp[3][1][17][2] = 1f32; // # PC FP
-        self.pp[3][2][18][0] = 1f32; // # PC CP
-        //###############
-        self.pp[4][0][19][0] = 1f32; // # FP PF
-        self.pp[4][1][20][1] = 1f32; // FP FF
-        self.pp[4][2][21][2] = 1f32; //# FP CF
-
-        self.pp[5][0][22][0] = 1f32; // FF PF
-        self.pp[5][1][23][1] = 1f32; // FF FF
-        self.pp[5][2][24][2] = 1f32; // FF CF
-
-        self.pp[6][0][25][0] = 1f32; // FC PF
-        self.pp[6][1][26][1] = 1f32; // FC FF
-        self.pp[6][2][27][2] = 1f32; // FC CF
-        //###############
-        self.pp[7][0][28][2] = 1f32; // CP PC
-        self.pp[7][1][29][0] = 1f32; // CP FC
-        self.pp[7][2][30][1] = 1f32; // CP CC
-
-        self.pp[8][0][31][2] = 1f32; // CF PC
-        self.pp[8][1][32][0] = 1f32; // CF FC
-        self.pp[8][2][33][1] = 1f32; // CF CC
-
-        self.pp[9][0][34][2] = 1f32; // CC PC
-        self.pp[9][1][35][0] = 1f32; // CC FC
-        self.pp[9][2][36][1] = 1f32; // CC CC
+        self.p[0][0][1][1] = 1f32/3f32; //# PP
+        self.p[0][0][2][0] = 1f32/3f32; //# PF
+        self.p[0][0][3][2] = 1f32/3f32; //# PC
+        self.p[0][1][4][2] = 1f32/3f32; //# FP
+        self.p[0][1][5][1] = 1f32/3f32; // # FF
+        self.p[0][1][6][0] = 1f32/3f32; // # FC
+        self.p[0][2][7][0] = 1f32/3f32; // # CP
+        self.p[0][2][8][2] = 1f32/3f32; // # CF
+        self.p[0][2][9][1] = 1f32/3f32; // # CC
+        // ##############
+        self.p[1][0][10][1] = 1f32; // # PP PP
+        self.p[1][1][11][2] = 1f32; // # PP FP
+        self.p[1][2][12][0] = 1f32; // # PP CP
+        self.p[2][0][13][1] = 1f32; // # PF PP
+        self.p[2][1][14][2] = 1f32; // # PF FP
+        self.p[2][2][15][0] = 1f32; // # PF CP
+        self.p[3][0][16][1] = 1f32; // # PC PP
+        self.p[3][1][17][2] = 1f32; // # PC FP
+        self.p[3][2][18][0] = 1f32; // # PC CP
+        //##############
+        self.p[4][0][19][0] = 1f32; // # FP PF
+        self.p[4][1][20][1] = 1f32; // FP FF
+        self.p[4][2][21][2] = 1f32; //# FP CF
+        self.p[5][0][22][0] = 1f32; // FF PF
+        self.p[5][1][23][1] = 1f32; // FF FF
+        self.p[5][2][24][2] = 1f32; // FF CF
+        self.p[6][0][25][0] = 1f32; // FC PF
+        self.p[6][1][26][1] = 1f32; // FC FF
+        self.p[6][2][27][2] = 1f32; // FC CF
+        //##############
+        self.p[7][0][28][2] = 1f32; // CP PC
+        self.p[7][1][29][0] = 1f32; // CP FC
+        self.p[7][2][30][1] = 1f32; // CP CC
+        self.p[8][0][31][2] = 1f32; // CF PC
+        self.p[8][1][32][0] = 1f32; // CF FC
+        self.p[8][2][33][1] = 1f32; // CF CC
+        self.p[9][0][34][2] = 1f32; // CC PC
+        self.p[9][1][35][0] = 1f32; // CC FC
+        self.p[9][2][36][1] = 1f32; // CC CC
     }
 
     pub fn from_random_state(&mut self) {
@@ -410,6 +402,7 @@ impl Shifumi {
     }
 
     pub fn run_game_vec(&mut self, Pi: Vec<i32>){
+        self.reset();
         self.display();
         println!("\n");
         while !self.is_game_over() {
@@ -615,6 +608,97 @@ impl Shifumi {
             Pi[s] = argmax_a;
         }
 
+        Pi
+    }
+
+
+    pub fn monte_carlo_exploring_starts(&mut self,
+                                        gamma: f32,
+                                        nb_iter: i32,
+                                        max_steps: i32) -> HashMap<i32, i32> {
+
+        let mut rng = rand::thread_rng();
+
+        let mut Pi = HashMap::new();
+        let mut Q: HashMap<(i32, i32), f32> = HashMap::new();
+        let mut returns: HashMap<(i32, i32), Vec<f32>> = HashMap::new();
+
+        for _ in 0..nb_iter {
+            self.from_random_state();
+
+            let mut is_first_action: bool = true;
+            let mut trajectory: Vec<(i32, i32, f32, Vec<i32>)> = Vec::new();
+            let mut steps_count: i32 = 0;
+
+            while steps_count < max_steps && !self.is_game_over() {
+                let s = self.agent_pos;
+                let aa = self.available_actions();
+
+                if !Pi.contains_key(&s) {
+                    let random_index = rng.gen_range(0..aa.len());
+                    Pi.insert(s.clone(), aa[random_index]);
+                }
+
+                let a = if is_first_action {
+                    let random_index = rng.gen_range(0..aa.len());
+                    is_first_action = false;
+                    aa[random_index]
+                } else {
+                    Pi[&s]
+                };
+
+                let prev_score = self.score();
+                self.step(a);
+                let r = self.score() - prev_score;
+
+                trajectory.push((s, a, r as f32, aa));
+                steps_count += 1;
+            }
+
+            let mut G = 0.0;
+            let mut t = trajectory.len() - 1;
+
+            for ((s, a, r, aa)) in trajectory.iter().rev() {
+                G = gamma * G + r;
+
+
+                let mut is_in = false;
+                if t > 1 {
+                    for (s_t, a_t, c_t, d_t) in Vec::from(&trajectory[..t]) {
+                        if s_t == *s && a_t == *a {
+                            is_in = true;
+                            break;
+                        }
+                    }
+                    t -= 1;
+                }
+
+                if !is_in{
+                    let entry = returns.entry((*s, *a)).or_insert(Vec::new());
+                    entry.push(G);
+
+                    let sum: f32 = entry.iter().sum();
+                    let mean = sum / entry.len() as f32;
+
+                    Q.insert((*s, *a), mean);
+
+                    let mut best_a: Option<i32> = None;
+                    let mut best_a_score: Option<f32> = None;
+
+                    for &a in aa {
+                        if !Q.contains_key(&(*s, a)) {
+                            Q.insert((*s, a), rng.gen());
+                        }
+                        if best_a == None || Q.get(&(*s, a)) > best_a_score.as_ref() {
+                            best_a = Option::from(a);
+                            best_a_score = Q.get(&(*s, a)).cloned();
+                        }
+                    }
+
+                    Pi.insert(*s, best_a.unwrap());
+                }
+            }
+        }
         Pi
     }
 
