@@ -481,19 +481,24 @@ impl LineWorld {
             }
 
             let mut G = 0.0;
+            println!("trajectory = {:?}", trajectory);
 
             for (t, (s, a, r, aa)) in trajectory.iter().rev().enumerate() {
                 G = gamma * G + r;
 
+                println!("trajectory = {:?}", trajectory);
                 if trajectory.iter().take(t).all(|triplet| triplet.0 != *s || triplet.1 != *a) {
                     let entry = returns.entry((*s, *a)).or_insert(Vec::new());
                     entry.push(G);
 
+                    println!("action = {}, state = {}", a, s);
+                    println!("goal = {}", G);
+                    println!("entry = \n {:?}", entry);
                     let sum: f32 = entry.iter().sum();
                     let mean = sum / entry.len() as f32;
 
                     Q.insert((*s, *a), mean);
-
+                    println!("{:?}", returns);
                     let mut best_a: i32 = -1000000;
                     let mut best_a_score: Option<f32> = None;
 
@@ -514,6 +519,18 @@ impl LineWorld {
         Pi
     }
 
+    // pub fn monte_carlo_on_policy_first_visit(&mut self,
+    //                                     epsilon: f32,
+    //                                     gamma: f32,
+    //                                     nb_iter: i32,
+    //                                     max_steps: i32) -> HashMap<i32, i32> {
+    //
+    //
+    //
+    //
+    //     Pi
+    // }
+    //
 
 }
 

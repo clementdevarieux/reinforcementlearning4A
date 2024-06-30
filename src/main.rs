@@ -33,7 +33,7 @@ fn main() {
     // }
     //println!("{:?}", res);
 
-    let res = grid.monte_carlo_exploring_starts(0.9999f32, 10000, 10);
+    let res = grid.monte_carlo_exploring_starts(0.9999f32, 1000, 10);
     grid.run_game_hashmap(res);
 
     // gridwold.step(1);
