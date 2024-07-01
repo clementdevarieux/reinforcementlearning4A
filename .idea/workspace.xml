@@ -16,33 +16,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c5cd50fc-e256-4444-a726-bc11d1a0c6e3" name="Changes" comment="grid world env python et affichage">
-      <change afterPath="$PROJECT_DIR$/exemples_cours/[Exemple] Episodic semi gradient Sarsa.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/reinforcementlearning4A.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/reinforcementlearning4A.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/environments/grid_world.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/environments/line_world.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/environments/montyhall1.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/environments/shifumi.ipynb" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/exemples_cours/[Exemple] Naive Monte Carlo ES on Line World.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/exemples_cours/[Exemple] Naive Monte Carlo ES on Line World.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Python wrapper 2024_04_26 (with intel Mac architecture)/libs/libsecret_envs.dylib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Python wrapper 2024_04_26 (with intel Mac architecture)/libs/libsecret_envs.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Python wrapper 2024_04_26 (with intel Mac architecture)/libs/libsecret_envs_intel_macos.dylib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Python wrapper 2024_04_26 (with intel Mac architecture)/libs/secret_envs.dll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Python wrapper 2024_04_26 (with intel Mac architecture)/secret_envs_wrapper.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Rust wrapper 2024_04_24/Cargo.toml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Rust wrapper 2024_04_24/libs/libsecret_envs.dylib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Rust wrapper 2024_04_24/libs/libsecret_envs.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Rust wrapper 2024_04_24/libs/secret_envs.dll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Rust wrapper 2024_04_24/src/main.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Rust wrapper 2024_04_25 (with intel Mac architecture)/Cargo.toml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Rust wrapper 2024_04_25 (with intel Mac architecture)/libs/libsecret_envs.dylib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Rust wrapper 2024_04_25 (with intel Mac architecture)/libs/libsecret_envs.so" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Rust wrapper 2024_04_25 (with intel Mac architecture)/libs/libsecret_envs_intel_macos.dylib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Rust wrapper 2024_04_25 (with intel Mac architecture)/libs/secret_envs.dll" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Projet] Secret envs 0 and 1 Rust wrapper 2024_04_25 (with intel Mac architecture)/src/main.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/algorithms.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/algorithms.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/environments.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/environments.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Env/LineWorld.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Env/LineWorld.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -78,30 +56,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/devar/Desktop/ESGI/master/M1/S2/reinforcementlearning4A/[Projet] Secret envs 0_1_ 2 and 3 Rust wrapper 2024_06_18 (with intel Mac architecture)",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "yarn",
-    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
-    "org.rust.disableDetachedFileInspectionC:/Users/devar/Desktop/ESGI/master/M1/S2/reinforcementlearning4A/[Projet] Secret envs 0_1_ 2 and 3 Rust wrapper 2024_06_18 (with intel Mac architecture)/src/main.rs": "true",
-    "org.rust.disableDetachedFileInspectionC:/Users/devar/Desktop/ESGI/master/M1/S2/reinforcementlearning4A/src/policy_iteration.rs": "true",
-    "settings.editor.selected.configurable": "preferences.editor",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/devar/Desktop/ESGI/master/M1/S2/reinforcementlearning4A/[Projet] Secret envs 0_1_ 2 and 3 Rust wrapper 2024_06_18 (with intel Mac architecture)&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
+    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
+    &quot;org.rust.disableDetachedFileInspectionC:/Users/devar/Desktop/ESGI/master/M1/S2/reinforcementlearning4A/[Projet] Secret envs 0_1_ 2 and 3 Rust wrapper 2024_06_18 (with intel Mac architecture)/src/main.rs&quot;: &quot;true&quot;,
+    &quot;org.rust.disableDetachedFileInspectionC:/Users/devar/Desktop/ESGI/master/M1/S2/reinforcementlearning4A/src/policy_iteration.rs&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\devar\Desktop\ESGI\master\M1\S2\reinforcementlearning4A\src" />
@@ -114,6 +92,7 @@
     <configuration name="Run" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="command" value="run --package reinforcementlearning4A --bin reinforcementlearning4A" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
       <option name="emulateTerminal" value="false" />
       <option name="channel" value="DEFAULT" />
       <option name="requiredFeatures" value="true" />
@@ -121,7 +100,6 @@
       <option name="withSudo" value="false" />
       <option name="buildTarget" value="REMOTE" />
       <option name="backtrace" value="SHORT" />
-      <envs />
       <option name="isRedirectInput" value="false" />
       <option name="redirectInputPath" value="" />
       <method v="2">
@@ -166,6 +144,7 @@
       <workItem from="1719151184700" duration="4356000" />
       <workItem from="1719155694753" duration="5909000" />
       <workItem from="1719316316828" duration="654000" />
+      <workItem from="1719761630989" duration="5605000" />
     </task>
     <task id="LOCAL-00001" summary="grid world env python et affichage">
       <option name="closed" value="true" />
