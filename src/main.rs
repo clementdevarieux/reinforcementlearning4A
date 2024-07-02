@@ -25,7 +25,7 @@ fn main() {
 
     // let mut grid = Env::GridWorld::GridWorld::init();
 
-    let mut shifumi = Env::Shifumi::Shifumi::init();
+    let mut monty = Env::MontyHall::MontyHall::init();
     // for _ in 0..10 {
     //     println!("coucou");
     //     let res = grid.monte_carlo_exploring_starts(0.99999f32, 10000, 10);
@@ -34,9 +34,9 @@ fn main() {
     //println!("{:?}", res);
 
     for _ in 0..10 {
-        let res = shifumi.monte_carlo_exploring_starts(0.99999f32, 10000, 10);
-        shifumi.run_game_hashmap(res);
-        shifumi.reset();
+        let res = monty.monte_carlo_exploring_starts(0.99999f32, 10000, 10);
+        monty.run_game_hashmap(res);
+        monty.reset();
     }
     // gridwold.step(1);
     // gridwold.display();
