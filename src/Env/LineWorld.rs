@@ -451,14 +451,13 @@ impl LineWorld {
 
         let mut rng = rand::thread_rng();
 
-        // let mut Pi = HashMap::new();
         let mut Pi: HashMap<i32, HashMap<i32, f32>> = Default::default();
 
         let mut Q: HashMap<(i32, i32), f32> = HashMap::new();
         let mut returns: HashMap<(i32, i32), Vec<f32>> = HashMap::new();
 
         for _ in 0..nb_iter {
-            self.from_random_state();
+            self.reset();
 
             let mut trajectory: Vec<(i32, i32, f32, Vec<i32>)> = Vec::new();
             let mut steps_count: i32 = 0;
@@ -529,31 +528,17 @@ impl LineWorld {
                     let mut A:  HashMap<i32, i32> = HashMap::new();
                     A.insert(*s, best_a.unwrap());
 
-                    // for (state, action) in &A {
-                    //     for &mut Pi_action in &mut Pi.get(state).unwrap(){
-                    //         if &mut Pi_action.key() == action {
-                    //             let new_p: f32 = 1 - epsilon + epsilon / self.available_actions().len();
-                    //             Pi_action.value(new_p);
-                    //         } else {
-                    //             let new_p: f32 = epsilon / self.available_actions().len();
-                    //             Pi_action.value(new_p);
-                    //         }
-                    //     }
-                    // }
-
                     for (state, action) in &A {
                         if let Some(actions) = Pi.get_mut(state) {
                             for (a, p) in actions.iter_mut() {
                                 if *a == *action {
-                                    *p = 1.0 - epsilon + epsilon / self.available_actions().len() as f32;
+                                    *p = 1.0 - epsilon + epsilon / self.num_actions as f32;
                                 } else {
-                                    *p = epsilon / self.available_actions().len() as f32;
+                                    *p = epsilon / self.num_actions as f32;
                                 }
                             }
                         }
                     }
-
-                    // Pi.insert(*s, best_a.unwrap());
                 }
             }
         }

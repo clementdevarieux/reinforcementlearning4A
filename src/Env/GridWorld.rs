@@ -2,6 +2,7 @@ use rand::Rng;
 use std::collections::HashMap;
 use std::io::Write;
 use colored::*;
+use rand::distributions::{Distribution, Uniform};
 
 pub struct GridWorld {
     pub agent_pos: i32,
@@ -37,6 +38,37 @@ impl GridWorld {
         }
     }
 
+    fn generate_random_probabilities(&self) -> Vec<f32> {
+        let mut rng = rand::thread_rng();
+        let between = Uniform::from(0.0..1.0);
+        let mut probabilities: Vec<f32> = (0..self.num_actions).map(|_| between.sample(&mut rng)).collect();
+        let sum: f32 = probabilities.iter().sum();
+
+        for prob in probabilities.iter_mut() {
+            *prob /= sum;
+        }
+
+        probabilities
+    }
+
+
+    fn select_action(&self, state: &HashMap<i32, f32>) -> i32 {
+        let mut rng = rand::thread_rng();
+        let random_value: f32 = rng.gen();
+        let mut a_biggest_prob: i32 = 0;
+
+        let mut cumulative_probability = 0.0;
+        for (action, probability) in state {
+            if state.get(&a_biggest_prob).unwrap() > probability {
+                a_biggest_prob = *action;
+            }
+            cumulative_probability += probability;
+            if random_value < cumulative_probability {
+                return action.clone();
+            }
+        }
+        a_biggest_prob
+    }
     pub fn update_p(&mut self) {
         for s in 0..self.S.len() {
             for a in 0..self.A.len() {
@@ -277,6 +309,27 @@ impl GridWorld {
         }
     }
 
+    pub fn run_game_random_hashmap(&mut self, Pi: HashMap<i32, HashMap<i32, f32>>) {
+        println!("Etat initial :\n");
+        self.reset();
+        self.display();
+        println!("\n");
+        let mut step: i32 = 1;
+        while !self.is_game_over() && step <= 50 {
+            println!("Step {:?}: \n", step);
+            if let p = Pi.get(&self.agent_pos).unwrap() {
+                let action = self.select_action(&p);
+                println!("Action for position {}: {}", self.agent_pos, action);
+                self.step(action);
+            } else {
+                println!("No action found for position {}. Ending game.", self.agent_pos);
+                break;
+            }
+            self.display();
+            println!("\n");
+            step += 1;
+        }
+    }
     pub fn policy_iteration(&mut self,
                             theta: f32,
                             gamma: f32) -> Vec<i32> {
@@ -549,5 +602,105 @@ impl GridWorld {
 
         Pi
     }
+    pub fn monte_carlo_fv_on_policy(&mut self,
+                                    gamma: f32,
+                                    epsilon: f32,
+                                    nb_iter: i32,
+                                    max_steps: i32) -> HashMap<i32, HashMap<i32, f32>> {
 
+        let mut rng = rand::thread_rng();
+
+        let mut Pi: HashMap<i32, HashMap<i32, f32>> = Default::default();
+
+        let mut Q: HashMap<(i32, i32), f32> = HashMap::new();
+        let mut returns: HashMap<(i32, i32), Vec<f32>> = HashMap::new();
+
+        for _ in 0..nb_iter {
+            self.reset();
+
+            let mut trajectory: Vec<(i32, i32, f32, Vec<i32>)> = Vec::new();
+            let mut steps_count: i32 = 0;
+
+            while steps_count < max_steps && !self.is_game_over() {
+                let s = self.agent_pos;
+                let aa = self.available_actions();
+
+                if !Pi.contains_key(&s) {
+                    let random_Vec = self.generate_random_probabilities();
+                    let mut prob_per_action : HashMap<i32, f32> = HashMap::new();
+                    for action in 0..random_Vec.len() {
+                        prob_per_action.insert(action as i32, random_Vec[action]);
+                    }
+                    Pi.insert(s.clone(), prob_per_action);
+                }
+
+                let a = self.select_action(&Pi.get(&s).unwrap());
+
+                let prev_score = self.score();
+                self.step(a);
+                let r = self.score() - prev_score;
+
+                trajectory.push((s, a, r as f32, aa));
+                steps_count += 1;
+            }
+
+            let mut G = 0.0;
+            let mut t = trajectory.len() - 1;
+
+            for ((s, a, r, aa)) in trajectory.iter().rev() {
+                G = gamma * G + r;
+
+
+                let mut is_in = false;
+                if t > 1 {
+                    for (s_t, a_t, c_t, d_t) in Vec::from(&trajectory[..t]) {
+                        if s_t == *s && a_t == *a {
+                            is_in = true;
+                            break;
+                        }
+                    }
+                    t -= 1;
+                }
+
+                if !is_in{
+                    let entry = returns.entry((*s, *a)).or_insert(Vec::new());
+                    entry.push(G);
+
+                    let sum: f32 = entry.iter().sum();
+                    let mean = sum / entry.len() as f32;
+
+                    Q.insert((*s, *a), mean);
+
+                    let mut best_a: Option<i32> = None;
+                    let mut best_a_score: Option<f32> = None;
+
+                    for &a in aa {
+                        if !Q.contains_key(&(*s, a)) {
+                            Q.insert((*s, a), rng.gen());
+                        }
+                        if best_a == None || Q.get(&(*s, a)) > best_a_score.as_ref() {
+                            best_a = Option::from(a);
+                            best_a_score = Q.get(&(*s, a)).cloned();
+                        }
+                    }
+
+                    let mut A:  HashMap<i32, i32> = HashMap::new();
+                    A.insert(*s, best_a.unwrap());
+
+                    for (state, action) in &A {
+                        if let Some(actions) = Pi.get_mut(state) {
+                            for (a, p) in actions.iter_mut() {
+                                if *a == *action {
+                                    *p = 1.0 - epsilon + epsilon / self.num_actions as f32;
+                                } else {
+                                    *p = epsilon / self.num_actions as f32;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Pi
+    }
 }
