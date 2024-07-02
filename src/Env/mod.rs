@@ -2,3 +2,8 @@ pub mod LineWorld;
 pub mod GridWorld;
 pub mod Shifumi;
 pub mod MontyHall;
+pub mod EnvironmentTrait;
+pub mod SecretEnv0;
+pub mod SecretEnv1;
+pub mod SecretEnv2;
+pub mod SecretEnv3;
