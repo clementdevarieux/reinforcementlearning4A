@@ -14,22 +14,24 @@ pub struct LineWorld {
 }
 
 impl LineWorld {
-    pub fn init() -> Self{
+    pub fn init() -> Self {
         Self {
             agent_pos: 2,
             num_states: 5,
             num_actions: 2,
             S: vec![0, 1, 2, 3, 4],
-            A: vec![0,1],
-            R: vec![-1,0,1],
-            T: vec![0,4],
-            p: {vec![
+            A: vec![0, 1],
+            R: vec![-1, 0, 1],
+            T: vec![0, 4],
+            p: {
                 vec![
-                    vec![vec![0f32; 3]; 5];
-                    2
-                ];
-                5
-            ]}
+                    vec![
+                        vec![vec![0f32; 3]; 5];
+                        2
+                    ];
+                    5
+                ]
+            }
         }
     }
     fn generate_random_probabilities(&self) -> Vec<f32> {
@@ -97,11 +99,11 @@ impl LineWorld {
     pub fn is_game_over(&self) -> bool {
         if self.agent_pos == 0 || self.agent_pos == 4 {
             true
-        } else {false}
+        } else { false }
     }
 
     pub fn available_actions(&self) -> Vec<i32> {
-        match self.is_game_over(){
+        match self.is_game_over() {
             true => vec![],
             false => vec![0, 1]
         }
@@ -130,7 +132,7 @@ impl LineWorld {
 
     pub fn display(&self) {
         for i in 0..5 {
-            if i == self.agent_pos{
+            if i == self.agent_pos {
                 print!("X");
             } else {
                 print!("_");
@@ -139,13 +141,13 @@ impl LineWorld {
         println!();
     }
 
-    pub fn run_game_vec(&mut self, Pi: Vec<i32>){
+    pub fn run_game_vec(&mut self, Pi: Vec<i32>) {
         println!("Etat initial :\n");
         self.display();
         println!("\n");
         let mut step: i32 = 1;
         while !self.is_game_over() {
-            println!("Step {:?}: \n",step);
+            println!("Step {:?}: \n", step);
             self.step(Pi[self.agent_pos as usize]);
             self.display();
             println!("\n");
@@ -177,7 +179,6 @@ impl LineWorld {
     pub fn policy_iteration(&mut self,
                             theta: f32,
                             gamma: f32) -> Vec<i32> {
-
         let len_S: usize = self.num_states as usize;
         let mut rng = rand::thread_rng();
         let mut V: Vec<f32> = Vec::with_capacity(len_S);
@@ -186,7 +187,7 @@ impl LineWorld {
             V.push(rng.gen_range(0f32..1f32));
         }
 
-        let mut Pi= Vec::with_capacity(len_S);
+        let mut Pi = Vec::with_capacity(len_S);
 
         for _ in 0..len_S {
             let random_index = rng.gen_range(0..self.num_actions) as usize;
@@ -283,7 +284,7 @@ impl LineWorld {
                            gamma: f32) -> Vec<i32> {
         self.update_p();
 
-        let len_S= self.num_states as usize;
+        let len_S = self.num_states as usize;
         let mut rng = rand::thread_rng();
         let mut V: Vec<f32> = Vec::with_capacity(len_S);
 
@@ -357,7 +358,6 @@ impl LineWorld {
                                         gamma: f32,
                                         nb_iter: i32,
                                         max_steps: i32) -> HashMap<i32, i32> {
-
         let mut rng = rand::thread_rng();
 
         let mut Pi = HashMap::new();
@@ -414,7 +414,7 @@ impl LineWorld {
                     t -= 1;
                 }
 
-                if !is_in{
+                if !is_in {
                     let entry = returns.entry((*s, *a)).or_insert(Vec::new());
                     entry.push(G);
 
@@ -448,7 +448,6 @@ impl LineWorld {
                                     epsilon: f32,
                                     nb_iter: i32,
                                     max_steps: i32) -> HashMap<i32, HashMap<i32, f32>> {
-
         let mut rng = rand::thread_rng();
 
         let mut Pi: HashMap<i32, HashMap<i32, f32>> = Default::default();
@@ -468,7 +467,7 @@ impl LineWorld {
 
                 if !Pi.contains_key(&s) {
                     let random_Vec = self.generate_random_probabilities();
-                    let mut prob_per_action : HashMap<i32, f32> = HashMap::new();
+                    let mut prob_per_action: HashMap<i32, f32> = HashMap::new();
                     for action in 0..random_Vec.len() {
                         prob_per_action.insert(action as i32, random_Vec[action]);
                     }
@@ -503,7 +502,7 @@ impl LineWorld {
                     t -= 1;
                 }
 
-                if !is_in{
+                if !is_in {
                     let entry = returns.entry((*s, *a)).or_insert(Vec::new());
                     entry.push(G);
 
@@ -525,7 +524,7 @@ impl LineWorld {
                         }
                     }
 
-                    let mut A:  HashMap<i32, i32> = HashMap::new();
+                    let mut A: HashMap<i32, i32> = HashMap::new();
                     A.insert(*s, best_a.unwrap());
 
                     for (state, action) in &A {
@@ -544,5 +543,103 @@ impl LineWorld {
         }
         Pi
     }
-}
 
+    pub fn monte_carlo_off_policy(&mut self,
+                                  gamma: f32,
+                                  epsilon: f32,
+                                  nb_iter: i32,
+                                  max_steps: i32) -> HashMap<i32, i32> {
+
+        let mut rng = rand::thread_rng();
+
+        let mut Q: HashMap<(i32, i32), f32> = HashMap::new();
+        let mut C: HashMap<(i32, i32), f32> = HashMap::new();
+        let mut Pi: HashMap<i32, i32> = HashMap::new();
+
+        for s in 0..self.num_states {
+            for a in 0..self.num_actions {
+                Q.insert((s, a), rng.gen_range(0f32..1f32));
+                C.insert((s, a), 0.0f32);
+            }
+        }
+
+        for s in 0..self.num_states {
+            let mut best_a: Option<i32> = None;
+            let mut best_a_score: Option<f32> = None;
+            for a in 0..self.num_actions {
+                if best_a == None || Q.get(&(s, a)) > best_a_score.as_ref() {
+                    best_a = Option::from(a);
+                    best_a_score = Q.get(&(s, a)).cloned();
+                }
+            }
+            Pi.insert(s, best_a.unwrap());
+        }
+
+
+        for _ in 0..nb_iter {
+            self.reset();
+
+            let mut trajectory: Vec<(i32, i32, f32, Vec<i32>)> = Vec::new();
+            let mut steps_count: i32 = 0;
+            let mut b: HashMap<i32, HashMap<i32, f32>> = HashMap::new();
+
+            for s in 0..self.num_states {
+                let random_Vec = self.generate_random_probabilities();
+                let mut prob_per_action: HashMap<i32, f32> = HashMap::new();
+                for a in 0..self.num_actions {
+                    prob_per_action.insert(a as i32, random_Vec[a as usize]);
+                }
+                b.insert(s, prob_per_action);
+            }
+
+            for (state, action) in &Pi {
+                if let Some(actions) = b.get_mut(state) {
+                    for (a, p) in actions.iter_mut() {
+                        if *a == *action {
+                            *p = 1.0 - epsilon + epsilon / self.num_actions as f32;
+                        } else {
+                            *p = epsilon / self.num_actions as f32;
+                        }
+                    }
+                }
+            }
+
+            while steps_count < max_steps && !self.is_game_over() {
+                let s = self.agent_pos;
+                let aa = self.available_actions();
+
+                let a = self.select_action(&b.get(&s).unwrap());
+
+                let prev_score = self.score();
+                self.step(a);
+                let r = self.score() - prev_score;
+
+                trajectory.push((s, a, r, aa));
+                steps_count += 1;
+            }
+
+            let mut W = 1.0f32;
+            let mut G = 0.0;
+
+            for ((s, a, r, aa)) in trajectory.iter().rev() {
+                G = gamma * G + r;
+
+                C.insert((*s, *a), C.get(&(*s, *a)).unwrap() +  W);
+
+                Q.insert((*s, *a),
+                         Q.get(&(*s, *a)).unwrap()
+                             + W/C.get(&(*s, *a)).unwrap()
+                             * (G - Q.get(&(*s, *a)).unwrap())
+                        );
+
+                if a != Pi.get(&s).unwrap() {continue;}
+                else {
+                    if let Some(actions) = b.get_mut(s){
+                        W = W * 1.0f32/actions.get(a).unwrap();
+                    }
+                }
+            }
+        }
+        Pi
+    }
+}
