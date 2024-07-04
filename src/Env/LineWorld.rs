@@ -32,6 +32,7 @@ impl LineWorld {
             ]}
         }
     }
+
     fn generate_random_probabilities(&self) -> Vec<f32> {
         let mut rng = rand::thread_rng();
         let between = Uniform::from(0.0..1.0);
