@@ -1,7 +1,7 @@
 use libloading::Library;
 use once_cell::sync::Lazy;
 
-pub(crate) fn getlib() -> Library {
+pub fn getlib() -> Library {
     unsafe {
         #[cfg(target_os = "linux")]
             let path = "./libs/libsecret_envs.so";

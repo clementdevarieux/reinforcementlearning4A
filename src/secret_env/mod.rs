@@ -1,1 +1,1 @@
-pub(crate) mod lib_secret_env;
+pub mod lib_secret_env;
