@@ -1,5 +1,6 @@
 use rand::Rng;
 use std::collections::HashMap;
+use rand::distributions::{Distribution, Uniform};
 
 pub struct MontyHall {
     pub agent_pos: i32,
@@ -65,6 +66,37 @@ impl MontyHall {
         self.p[3][4][5][0] = 1f32/3f32;
     }
 
+    fn generate_random_probabilities(&self) -> Vec<f32> {
+        let mut rng = rand::thread_rng();
+        let between = Uniform::from(0.0..1.0);
+        let mut probabilities: Vec<f32> = (0..self.available_actions().len()).map(|_| between.sample(&mut rng)).collect();
+        let sum: f32 = probabilities.iter().sum();
+
+        for prob in probabilities.iter_mut() {
+            *prob /= sum;
+        }
+
+        probabilities
+    }
+
+
+    fn select_action(&self, state: &HashMap<i32, f32>) -> i32 {
+        let mut rng = rand::thread_rng();
+        let random_value: f32 = rng.gen();
+        let mut a_biggest_prob: i32 = 0;
+
+        let mut cumulative_probability = 0.0;
+        for (action, probability) in state {
+            if state.get(&a_biggest_prob).unwrap() > probability {
+                a_biggest_prob = *action;
+            }
+            cumulative_probability += probability;
+            if random_value < cumulative_probability {
+                return action.clone();
+            }
+        }
+        a_biggest_prob
+    }
     pub fn from_random_state(&mut self) {
         let ok_states: Vec<i32> = vec![0,1,2,3];
         let mut rng = rand::thread_rng();
@@ -318,6 +350,28 @@ impl MontyHall {
         while !self.is_game_over() && step <= 50 {
             println!("Step {:?}: \n", step);
             if let Some(&action) = Pi.get(&self.agent_pos) {
+                println!("Action for position {}: {}", self.agent_pos, action);
+                self.step(action);
+            } else {
+                println!("No action found for position {}. Ending game.", self.agent_pos);
+                break;
+            }
+            self.display();
+            println!("\n");
+            step += 1;
+        }
+    }
+
+    pub fn run_game_random_hashmap(&mut self, Pi: HashMap<i32, HashMap<i32, f32>>) {
+        println!("Etat initial :\n");
+        self.reset();
+        self.display();
+        println!("\n");
+        let mut step: i32 = 1;
+        while !self.is_game_over() && step <= 50 {
+            println!("Step {:?}: \n", step);
+            if let p = Pi.get(&self.agent_pos).unwrap() {
+                let action = self.select_action(&p);
                 println!("Action for position {}: {}", self.agent_pos, action);
                 self.step(action);
             } else {
@@ -594,6 +648,223 @@ impl MontyHall {
                     }
 
                     Pi.insert(*s, best_a.unwrap());
+                }
+            }
+        }
+        Pi
+    }
+
+    pub fn monte_carlo_fv_on_policy(&mut self,
+                                    gamma: f32,
+                                    epsilon: f32,
+                                    nb_iter: i32,
+                                    max_steps: i32) -> HashMap<i32, HashMap<i32, f32>> {
+        let mut rng = rand::thread_rng();
+
+        let mut Pi: HashMap<i32, HashMap<i32, f32>> = Default::default();
+
+        let mut Q: HashMap<(i32, i32), f32> = HashMap::new();
+        let mut returns: HashMap<(i32, i32), Vec<f32>> = HashMap::new();
+
+        for _ in 0..nb_iter {
+            self.reset();
+
+            let mut trajectory: Vec<(i32, i32, f32, Vec<i32>)> = Vec::new();
+            let mut steps_count: i32 = 0;
+
+            while steps_count < max_steps && !self.is_game_over() {
+                let s = self.agent_pos;
+                let aa = self.available_actions();
+
+                if !Pi.contains_key(&s) {
+                    let random_Vec = self.generate_random_probabilities();
+                    let mut prob_per_action: HashMap<i32, f32> = HashMap::new();
+                    for action in 0..random_Vec.len() {
+                        prob_per_action.insert(action as i32, random_Vec[action]);
+                    }
+                    Pi.insert(s.clone(), prob_per_action);
+                }
+
+                let a = self.select_action(&Pi.get(&s).unwrap());
+
+                let prev_score = self.score();
+                self.step(a);
+                let r = self.score() - prev_score;
+
+                trajectory.push((s, a, r as f32, aa));
+                steps_count += 1;
+            }
+
+            let mut G = 0.0;
+            let mut t = trajectory.len() - 1;
+
+            for ((s, a, r, aa)) in trajectory.iter().rev() {
+                G = gamma * G + r;
+
+
+                let mut is_in = false;
+                if t > 1 {
+                    for (s_t, a_t, c_t, d_t) in Vec::from(&trajectory[..t]) {
+                        if s_t == *s && a_t == *a {
+                            is_in = true;
+                            break;
+                        }
+                    }
+                    t -= 1;
+                }
+
+                if !is_in {
+                    let entry = returns.entry((*s, *a)).or_insert(Vec::new());
+                    entry.push(G);
+
+                    let sum: f32 = entry.iter().sum();
+                    let mean = sum / entry.len() as f32;
+
+                    Q.insert((*s, *a), mean);
+
+                    let mut best_a: Option<i32> = None;
+                    let mut best_a_score: Option<f32> = None;
+
+                    for &a in aa {
+                        if !Q.contains_key(&(*s, a)) {
+                            Q.insert((*s, a), rng.gen());
+                        }
+                        if best_a == None || Q.get(&(*s, a)) > best_a_score.as_ref() {
+                            best_a = Option::from(a);
+                            best_a_score = Q.get(&(*s, a)).cloned();
+                        }
+                    }
+
+                    let mut A: HashMap<i32, i32> = HashMap::new();
+                    A.insert(*s, best_a.unwrap());
+
+                    for (state, action) in &A {
+                        if let Some(actions) = Pi.get_mut(state) {
+                            for (a, p) in actions.iter_mut() {
+                                if *a == *action {
+                                    *p = 1.0 - epsilon + epsilon / self.num_actions as f32;
+                                } else {
+                                    *p = epsilon / self.num_actions as f32;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Pi
+    }
+
+    pub fn monte_carlo_off_policy(&mut self,
+                                  gamma: f32,
+                                  epsilon: f32,
+                                  nb_iter: i32,
+                                  max_steps: i32) -> HashMap<i32, i32> {
+
+        let mut rng = rand::thread_rng();
+
+        let mut Q: HashMap<(i32, i32), f32> = HashMap::new();
+        let mut C: HashMap<(i32, i32), f32> = HashMap::new();
+        let mut Pi: HashMap<i32, i32> = HashMap::new();
+
+        for s in 0..self.num_states {
+            for a in 0..self.num_actions {
+                Q.insert((s, a), rng.gen_range(0f32..1f32));
+                C.insert((s, a), 0.0f32);
+            }
+        }
+
+        for s in 0..self.num_states {
+            if !self.T.contains(&s){
+                let mut best_a: Option<i32> = None;
+                let mut best_a_score: Option<f32> = None;
+                for a in 0..self.num_actions {
+                    if best_a == None || Q.get(&(s, a)) > best_a_score.as_ref() {
+                        best_a = Option::from(a);
+                        best_a_score = Q.get(&(s, a)).cloned();
+                    }
+                }
+                Pi.insert(s, best_a.unwrap());
+            }
+        }
+
+
+        for _ in 0..nb_iter {
+            self.reset();
+
+            let mut trajectory: Vec<(i32, i32, f32, Vec<i32>)> = Vec::new();
+            let mut steps_count: i32 = 0;
+            let mut b: HashMap<i32, HashMap<i32, f32>> = HashMap::new();
+
+            for s in 0..self.num_states {
+                let random_Vec = self.generate_random_probabilities();
+                let mut prob_per_action: HashMap<i32, f32> = HashMap::new();
+                for a in 0..self.num_actions {
+                    prob_per_action.insert(a as i32, random_Vec[a as usize]);
+                }
+                b.insert(s, prob_per_action);
+            }
+
+            for (state, action) in &Pi {
+                if let Some(actions) = b.get_mut(state) {
+                    for (a, p) in actions.iter_mut() {
+                        if *a == *action {
+                            *p = 1.0 - epsilon + epsilon / self.num_actions as f32;
+                        } else {
+                            *p = epsilon / self.num_actions as f32;
+                        }
+                    }
+                }
+            }
+
+            while steps_count < max_steps && !self.is_game_over() {
+                let s = self.agent_pos;
+                let aa = self.available_actions();
+
+                let a = self.select_action(&b.get(&s).unwrap());
+
+                let prev_score = self.score();
+                self.step(a);
+                let r = self.score() - prev_score;
+
+                trajectory.push((s, a, r as f32, aa));
+                steps_count += 1;
+            }
+
+            let mut W = 1.0f32;
+            let mut G = 0.0;
+
+            for ((s, a, r, aa)) in trajectory.iter().rev() {
+                G = gamma * G + r;
+
+                C.insert((*s, *a), C.get(&(*s, *a)).unwrap() +  W);
+
+                Q.insert((*s, *a),
+                         Q.get(&(*s, *a)).unwrap()
+                             + W/C.get(&(*s, *a)).unwrap()
+                             * (G - Q.get(&(*s, *a)).unwrap())
+                );
+
+                let mut best_a: Option<i32> = None;
+                let mut best_a_score: Option<f32> = None;
+
+                for &a in aa {
+                    if !Q.contains_key(&(*s, a)) {
+                        Q.insert((*s, a), rng.gen());
+                    }
+                    if best_a == None || Q.get(&(*s, a)) > best_a_score.as_ref() {
+                        best_a = Option::from(a);
+                        best_a_score = Q.get(&(*s, a)).cloned();
+                    }
+                }
+
+                Pi.insert(*s, best_a.unwrap());
+
+                if a != Pi.get(&s).unwrap() {continue;}
+                else {
+                    if let Some(actions) = b.get_mut(s){
+                        W = W * 1.0f32/actions.get(a).unwrap();
+                    }
                 }
             }
         }

@@ -37,7 +37,7 @@ impl LineWorld {
     fn generate_random_probabilities(&self) -> Vec<f32> {
         let mut rng = rand::thread_rng();
         let between = Uniform::from(0.0..1.0);
-        let mut probabilities: Vec<f32> = (0..self.num_actions).map(|_| between.sample(&mut rng)).collect();
+        let mut probabilities: Vec<f32> = (0..self.available_actions().len()).map(|_| between.sample(&mut rng)).collect();
         let sum: f32 = probabilities.iter().sum();
 
         for prob in probabilities.iter_mut() {
@@ -164,6 +164,28 @@ impl LineWorld {
         while !self.is_game_over() && step <= 50 {
             println!("Step {:?}: \n", step);
             if let Some(&action) = Pi.get(&self.agent_pos) {
+                println!("Action for position {}: {}", self.agent_pos, action);
+                self.step(action);
+            } else {
+                println!("No action found for position {}. Ending game.", self.agent_pos);
+                break;
+            }
+            self.display();
+            println!("\n");
+            step += 1;
+        }
+    }
+
+    pub fn run_game_random_hashmap(&mut self, Pi: HashMap<i32, HashMap<i32, f32>>) {
+        println!("Etat initial :\n");
+        self.reset();
+        self.display();
+        println!("\n");
+        let mut step: i32 = 1;
+        while !self.is_game_over() && step <= 50 {
+            println!("Step {:?}: \n", step);
+            if let p = Pi.get(&self.agent_pos).unwrap() {
+                let action = self.select_action(&p);
                 println!("Action for position {}: {}", self.agent_pos, action);
                 self.step(action);
             } else {
@@ -564,15 +586,17 @@ impl LineWorld {
         }
 
         for s in 0..self.num_states {
-            let mut best_a: Option<i32> = None;
-            let mut best_a_score: Option<f32> = None;
-            for a in 0..self.num_actions {
-                if best_a == None || Q.get(&(s, a)) > best_a_score.as_ref() {
-                    best_a = Option::from(a);
-                    best_a_score = Q.get(&(s, a)).cloned();
+            if !self.T.contains(&s){
+                let mut best_a: Option<i32> = None;
+                let mut best_a_score: Option<f32> = None;
+                for a in 0..self.num_actions {
+                    if best_a == None || Q.get(&(s, a)) > best_a_score.as_ref() {
+                        best_a = Option::from(a);
+                        best_a_score = Q.get(&(s, a)).cloned();
+                    }
                 }
+                Pi.insert(s, best_a.unwrap());
             }
-            Pi.insert(s, best_a.unwrap());
         }
 
 
@@ -631,6 +655,21 @@ impl LineWorld {
                              + W/C.get(&(*s, *a)).unwrap()
                              * (G - Q.get(&(*s, *a)).unwrap())
                         );
+
+                let mut best_a: Option<i32> = None;
+                let mut best_a_score: Option<f32> = None;
+
+                for &a in aa {
+                    if !Q.contains_key(&(*s, a)) {
+                        Q.insert((*s, a), rng.gen());
+                    }
+                    if best_a == None || Q.get(&(*s, a)) > best_a_score.as_ref() {
+                        best_a = Option::from(a);
+                        best_a_score = Q.get(&(*s, a)).cloned();
+                    }
+                }
+
+                Pi.insert(*s, best_a.unwrap());
 
                 if a != Pi.get(&s).unwrap() {continue;}
                 else {
