@@ -15,8 +15,9 @@ use colored::*;
 fn main() {
 
     let mut secret0 = Env::SecretEnv0::SecretEnv0::new();
-    let policy = secret0.value_iteration(0.0001f32, 0.999f32);
-    println!("{:?}", policy);
+    //let policy = secret0.value_iteration(0.0001f32, 0.999f32);
+    let res = secret0.monte_carlo_exploring_starts(0.99999f32, 10000, 10);
+    println!("{:?}", res);
 
     secret0.display();
     //

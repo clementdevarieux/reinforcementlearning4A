@@ -39,21 +39,21 @@ impl SecretEnv0 {
         }
     }
 
-    pub fn num_actions(&self) -> i32 {
-        let secret_env_0_num_actions: libloading::Symbol<unsafe extern fn() -> usize> =
-            unsafe{LIB.get(b"secret_env_0_num_actions").expect("Failed to load function `secret_env_0_num_actions`")};
-        unsafe {
-            let num = secret_env_0_num_actions();
-            num as i32
-        }
-    }
-
     pub fn agent_pos(&self) -> i32{
         let secret_env_0_state_id: libloading::Symbol<unsafe extern fn(*const c_void) -> usize> =
             unsafe{LIB.get(b"secret_env_0_state_id").expect("Failed to load function `secret_env_0_state_id`")};
         unsafe {
             let s = secret_env_0_state_id(self.env);
             s as i32
+        }
+    }
+
+    pub fn num_actions(&self) -> i32 {
+        let secret_env_0_num_actions: libloading::Symbol<unsafe extern fn() -> usize> =
+            unsafe{LIB.get(b"secret_env_0_num_actions").expect("Failed to load function `secret_env_0_num_actions`")};
+        unsafe {
+            let num = secret_env_0_num_actions();
+            num as i32
         }
     }
 
@@ -65,6 +65,29 @@ impl SecretEnv0 {
             let num_actions = self.num_actions() as usize;
             Vec::from_raw_parts(actions_ptr as *mut usize, num_actions, num_actions)
         }
+    }
+
+    pub fn available_actions_len(&self) -> i32 {
+        let secret_env_0_available_actions_len: libloading::Symbol<unsafe extern fn(*const c_void) -> usize> =
+        unsafe{LIB.get(b"secret_env_0_available_actions_len").expect("Failed to load function `secret_env_0_available_actions_len`")};
+        unsafe {
+            let num_available_actions = secret_env_0_available_actions_len(self.env);
+            num_available_actions as i32
+        }
+    }
+
+    pub fn available_actions(&self) -> Vec<usize> {
+        let secret_env_0_available_actions: libloading::Symbol<unsafe extern fn(*const c_void) -> *const usize> =
+            unsafe{LIB.get(b"secret_env_0_available_actions").expect("Failed to load function `secret_env_0_available_actions`")};
+        unsafe {
+            let actions_ptr = secret_env_0_available_actions(self.env);
+            let num_available_actions = self.available_actions_len() as usize;
+            Vec::from_raw_parts(actions_ptr as *mut usize, num_available_actions, num_available_actions)
+        }
+    }
+
+    pub fn first_available_action(&self) -> usize {
+        self.available_actions()[0]
     }
 
     pub fn num_rewards(&self) -> i32 {
@@ -100,6 +123,30 @@ impl SecretEnv0 {
         unsafe {
             secret_env_0_display(self.env)
         }
+    }
+
+    pub fn from_random_state(&mut self) -> *mut c_void {
+        let secret_env_0_from_random_state: libloading::Symbol<unsafe extern fn() -> *mut c_void> =
+            unsafe{LIB.get(b"secret_env_0_from_random_state").expect("Failed to load function `secret_env_0_from_random_state`")};
+        unsafe {
+            let env = secret_env_0_from_random_state();
+            env
+        }
+    }
+
+    pub fn score(&self) -> f32 {
+        let secret_env_0_score: libloading::Symbol<unsafe extern fn(*const c_void) -> f32> =
+            unsafe{LIB.get(b"secret_env_0_score").expect("Failed to load function `secret_env_0_score`")};
+        unsafe {
+            let score_return = secret_env_0_score(self.env);
+            score_return
+        }
+    }
+
+    pub fn step(&mut self) {
+        let secret_env_0_step: libloading::Symbol<unsafe extern fn(*mut c_void, usize)> =
+            unsafe{LIB.get(b"secret_env_0_step").expect("Failed to load function `secret_env_0_step`")};
+        unsafe{secret_env_0_step(self.env, self.first_available_action());}
     }
 
 
@@ -261,6 +308,97 @@ impl SecretEnv0 {
             Pi[s as usize] = argmax_a;
         }
 
+        Pi
+    }
+
+
+    pub fn monte_carlo_exploring_starts(&mut self,
+                                        gamma: f32,
+                                        nb_iter: i32,
+                                        max_steps: i32) -> HashMap<i32, usize> {
+
+        let mut rng = rand::thread_rng();
+
+        let mut Pi = HashMap::new();
+        let mut Q: HashMap<(i32, i32), f32> = HashMap::new();
+        let mut returns: HashMap<(i32, i32), Vec<f32>> = HashMap::new();
+
+        for _ in 0..nb_iter {
+            self.from_random_state();
+
+            let mut is_first_action: bool = true;
+            let mut trajectory: Vec<(i32, i32, f32, Vec<usize>)> = Vec::new();
+            let mut steps_count: i32 = 0;
+
+            while steps_count < max_steps && !self.is_game_over() {
+                let s = self.agent_pos();
+                let aa:Vec<usize> = self.available_actions();
+
+                if !Pi.contains_key(&s) {
+                    let random_index = rng.gen_range(0..aa.len());
+                    Pi.insert(s.clone(), aa[random_index]);
+                }
+
+                let a = if is_first_action {
+                    let random_index = rng.gen_range(0..aa.len());
+                    is_first_action = false;
+                    aa[random_index]
+                } else {
+                    Pi[&s]
+                };
+
+                let prev_score = self.score();
+                self.step(); // avant on faisait self.step(a), mais on peut plus mettre a avec l'implem du prof
+                let r = self.score() - prev_score;
+
+                trajectory.push((s, a as i32, r, aa));
+                steps_count += 1;
+            }
+
+            let mut G = 0.0;
+            let mut t = trajectory.len() - 1;
+
+            for ((s, a, r, aa)) in trajectory.iter().rev() {
+                G = gamma * G + r;
+
+
+                let mut is_in = false;
+                if t > 1 {
+                    for (s_t, a_t, c_t, d_t) in Vec::from(&trajectory[..t]) {
+                        if s_t == *s && a_t == *a {
+                            is_in = true;
+                            break;
+                        }
+                    }
+                    t -= 1;
+                }
+
+                if !is_in{
+                    let entry = returns.entry((*s, *a)).or_insert(Vec::new());
+                    entry.push(G);
+
+                    let sum: f32 = entry.iter().sum();
+                    let mean = sum / entry.len() as f32;
+
+                    Q.insert((*s, *a), mean);
+
+                    let mut best_a: Option<usize> = None;
+                    let mut best_a_score: Option<f32> = None;
+
+                    for &a in aa {
+                        if !Q.contains_key(&(*s, a as i32)) {
+                            Q.insert((*s, a as i32), rng.gen());
+                        }
+                        if best_a == None || Q.get(&(*s, a as i32)) > best_a_score.as_ref() {
+                            best_a = Option::from(a);
+                            best_a_score = Q.get(&(*s, a as i32)).cloned();
+                        }
+                    }
+
+                    Pi.insert(*s, best_a.unwrap());
+                }
+            }
+        }
         Pi
     }
 
