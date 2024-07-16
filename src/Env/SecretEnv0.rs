@@ -317,6 +317,7 @@ impl SecretEnv0 {
                                         nb_iter: i32,
                                         max_steps: i32) -> HashMap<i32, usize> {
 
+
         let mut rng = rand::thread_rng();
 
         let mut Pi = HashMap::new();
@@ -333,6 +334,11 @@ impl SecretEnv0 {
             while steps_count < max_steps && !self.is_game_over() {
                 let s = self.agent_pos();
                 let aa:Vec<usize> = self.available_actions();
+
+                if aa.is_empty() {
+                    println!("No available actions from state {}", s);
+                    break;
+                }
 
                 if !Pi.contains_key(&s) {
                     let random_index = rng.gen_range(0..aa.len());
@@ -353,6 +359,11 @@ impl SecretEnv0 {
 
                 trajectory.push((s, a as i32, r, aa));
                 steps_count += 1;
+            }
+
+            if trajectory.is_empty() {
+                println!("Trajectory is empty after max_steps: {}", max_steps);
+                continue;
             }
 
             let mut G = 0.0;
