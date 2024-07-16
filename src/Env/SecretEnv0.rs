@@ -317,7 +317,6 @@ impl SecretEnv0 {
                                         nb_iter: i32,
                                         max_steps: i32) -> HashMap<i32, usize> {
 
-
         let mut rng = rand::thread_rng();
 
         let mut Pi = HashMap::new();
@@ -325,7 +324,8 @@ impl SecretEnv0 {
         let mut returns: HashMap<(i32, i32), Vec<f32>> = HashMap::new();
 
         for _ in 0..nb_iter {
-            self.from_random_state();
+            self.env = self.from_random_state();
+            //self.display();
 
             let mut is_first_action: bool = true;
             let mut trajectory: Vec<(i32, i32, f32, Vec<usize>)> = Vec::new();
