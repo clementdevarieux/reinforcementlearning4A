@@ -15,9 +15,10 @@ use colored::*;
 fn main() {
 
     let mut secret0 = Env::SecretEnv0::SecretEnv0::new();
-    let policy = secret0.policy_iteration(0.0001f32, 0.999f32);
+    let policy = secret0.value_iteration(0.0001f32, 0.999f32);
     println!("{:?}", policy);
 
+    secret0.display();
     //
     // pub fn display_matrix(matrix: &[i32], rows: usize, cols: usize) {
     //     for i in 0..rows {

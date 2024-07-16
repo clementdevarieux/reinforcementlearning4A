@@ -186,5 +186,83 @@ impl SecretEnv0 {
         return Pi
     }
 
+    pub fn value_iteration(&mut self,
+                           theta: f32,
+                           gamma: f32) -> Vec<i32> {
+        // self.update_p();
+
+        let len_S= self.num_states() as usize;
+        let mut rng = rand::thread_rng();
+        let mut V: Vec<f32> = Vec::with_capacity(len_S);
+
+        // for i in 0..len_S {
+        //     if self.T.contains(&(i as i32)) {
+        //         V.push(0f32);
+        //     } else {
+        //         V.push(rng.gen_range(0f32..1f32));
+        //     }
+        // }
+        for _ in 0..len_S {
+            V.push(rng.gen_range(0f32..1f32));
+        }
+
+        loop {
+            let mut delta = 0f32;
+            for s in 0..len_S {
+                if self.is_game_over() {
+                    continue;
+                }
+
+                let v = V[s];
+                let mut max_value: f32 = -9999f32;
+                for a in 0..self.num_actions() {
+                    let mut total: f32 = 0.0;
+                    for s_p in 0..len_S {
+                        for r in 0..self.num_rewards() {
+                            total += self.p(s as usize,a as usize,s_p as usize,r as usize) * (self.R(r as usize) as f32 + gamma * V[s_p as usize]);
+                        }
+                    }
+                    if total > max_value {
+                        max_value = total;
+                    }
+                }
+
+                V[s] = max_value;
+                delta = delta.max((v - V[s]).abs());
+            }
+            if delta < theta {
+                break;
+            }
+        }
+
+        let mut Pi: Vec<i32> = vec![0; len_S];
+        for s in 0..self.num_states() {
+            if self.is_game_over() {
+                continue;
+            }
+
+            let mut argmax_a: i32 = -1;
+            let mut max_value: f32 = -99999f32;
+
+            for a in 0..self.num_actions() {
+                let mut total: f32 = 0.0;
+                for s_p in 0..self.num_states() {
+                    for r in 0..self.num_rewards() {
+                        total += self.p(s as usize,a as usize,s_p as usize,r as usize) * (self.R(r as usize) as f32 + gamma * V[s_p as usize]);
+                    }
+                }
+
+                if total > max_value {
+                    max_value = total;
+                    argmax_a = a as i32;
+                }
+            }
+
+            Pi[s as usize] = argmax_a;
+        }
+
+        Pi
+    }
+
 
 }
