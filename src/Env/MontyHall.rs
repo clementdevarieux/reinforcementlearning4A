@@ -1,10 +1,8 @@
 use rand::Rng;
 use std::collections::HashMap;
-use std::io::Write;
-use colored::*;
 use rand::distributions::{Distribution, Uniform};
 
-pub struct Shifumi {
+pub struct MontyHall {
     pub agent_pos: i32,
     pub num_states: i32,
     pub num_actions: i32,
@@ -12,71 +10,60 @@ pub struct Shifumi {
     pub A: Vec<i32>,
     pub R: Vec<i32>,
     pub T: Vec<i32>,
-    pub p: Vec<Vec<Vec<Vec<f32>>>>
+    pub p: Vec<Vec<Vec<Vec<f32>>>>,
+    pub deleted_door: i32
 }
 
-impl Shifumi {
+impl MontyHall {
     pub fn init() -> Self {
         Self {
             agent_pos: 0,
-            num_states: 37,
-            num_actions: 3,
-            S: (0..37).collect(),
-            A: vec![0, 1, 2], // P F C
-            R: vec![-1, 0, 1],
-            T: (10..37).collect(),
+            num_states: 6,
+            num_actions: 5,
+            S: vec![0, 1, 2, 3, 4, 5], // état initial / on a choisi la porte A / B / C / même porte / on change
+            A: vec![0, 1, 2, 3, 4], // porte A / B / C / on reste / on change
+            R: vec![0, 1],
+            T: vec![4, 5],
             p: {
                 vec![
                     vec![
-                        vec![vec![0f32; 3]; 37];
-                        3
+                        vec![vec![0f32; 2]; 6];
+                        5
                     ];
-                    37
+                    6
                 ]
-            }
+            },
+            deleted_door: 0
         }
     }
 
     pub fn update_p(&mut self) {
-        self.p[0][0][1][1] = 1f32/3f32; //# PP
-        self.p[0][0][2][0] = 1f32/3f32; //# PF
-        self.p[0][0][3][2] = 1f32/3f32; //# PC
-        self.p[0][1][4][2] = 1f32/3f32; //# FP
-        self.p[0][1][5][1] = 1f32/3f32; // # FF
-        self.p[0][1][6][0] = 1f32/3f32; // # FC
-        self.p[0][2][7][0] = 1f32/3f32; // # CP
-        self.p[0][2][8][2] = 1f32/3f32; // # CF
-        self.p[0][2][9][1] = 1f32/3f32; // # CC
-        // ##############
-        self.p[1][0][10][1] = 1f32; // # PP PP
-        self.p[1][1][11][2] = 1f32; // # PP FP
-        self.p[1][2][12][0] = 1f32; // # PP CP
-        self.p[2][0][13][1] = 1f32; // # PF PP
-        self.p[2][1][14][2] = 1f32; // # PF FP
-        self.p[2][2][15][0] = 1f32; // # PF CP
-        self.p[3][0][16][1] = 1f32; // # PC PP
-        self.p[3][1][17][2] = 1f32; // # PC FP
-        self.p[3][2][18][0] = 1f32; // # PC CP
-        //##############
-        self.p[4][0][19][0] = 1f32; // # FP PF
-        self.p[4][1][20][1] = 1f32; // FP FF
-        self.p[4][2][21][2] = 1f32; //# FP CF
-        self.p[5][0][22][0] = 1f32; // FF PF
-        self.p[5][1][23][1] = 1f32; // FF FF
-        self.p[5][2][24][2] = 1f32; // FF CF
-        self.p[6][0][25][0] = 1f32; // FC PF
-        self.p[6][1][26][1] = 1f32; // FC FF
-        self.p[6][2][27][2] = 1f32; // FC CF
-        //##############
-        self.p[7][0][28][2] = 1f32; // CP PC
-        self.p[7][1][29][0] = 1f32; // CP FC
-        self.p[7][2][30][1] = 1f32; // CP CC
-        self.p[8][0][31][2] = 1f32; // CF PC
-        self.p[8][1][32][0] = 1f32; // CF FC
-        self.p[8][2][33][1] = 1f32; // CF CC
-        self.p[9][0][34][2] = 1f32; // CC PC
-        self.p[9][1][35][0] = 1f32; // CC FC
-        self.p[9][2][36][1] = 1f32; // CC CC
+        // état initiaux
+        self.p[0][0][1][0] = 1.0f32;
+        self.p[0][1][2][0] = 1.0f32;
+        self.p[0][2][3][0] = 1.0f32;
+
+        // on reste
+        // on perd
+        self.p[1][3][4][0] = 2f32/3f32;
+        self.p[2][3][4][0] = 2f32/3f32;
+        self.p[3][3][4][0] = 2f32/3f32;
+
+        // on gagne
+        self.p[1][3][4][1] = 1f32/3f32;
+        self.p[2][3][4][1] = 1f32/3f32;
+        self.p[3][3][4][1] = 1f32/3f32;
+
+        // on change
+        // on gagne
+        self.p[1][4][5][1] = 2f32/3f32;
+        self.p[2][4][5][1] = 2f32/3f32;
+        self.p[3][4][5][1] = 2f32/3f32;
+
+        // on perd
+        self.p[1][4][5][0] = 1f32/3f32;
+        self.p[2][4][5][0] = 1f32/3f32;
+        self.p[3][4][5][0] = 1f32/3f32;
     }
 
     fn generate_random_probabilities(&self) -> Vec<f32> {
@@ -111,7 +98,7 @@ impl Shifumi {
         a_biggest_prob
     }
     pub fn from_random_state(&mut self) {
-        let ok_states: Vec<i32> = vec![0,1,2,3,4,5,6,7,8,9];
+        let ok_states: Vec<i32> = vec![0,1,2,3];
         let mut rng = rand::thread_rng();
         self.agent_pos = ok_states[rng.gen_range(0..ok_states.len())]
     }
@@ -129,88 +116,44 @@ impl Shifumi {
     }
 
     pub fn available_actions(&self) -> Vec<i32> {
-        match self.is_game_over(){
-            true => vec![],
-            false => vec![0, 1, 2]
+        if self.agent_pos == 0 {
+            vec![0, 1, 2]
+        } else if self.agent_pos == 1 || self.agent_pos == 2 || self.agent_pos == 3 {
+            vec![3, 4]
+        } else {
+            vec![]
         }
     }
 
     pub fn score(&self) -> i32 {
-        let minus_1: Vec<i32> = vec![2, 6, 7, 12, 15, 18, 19, 22, 25, 29, 32, 35];
-        let plus_1: Vec<i32> = vec![3, 4, 8, 11, 14, 17, 21, 24, 27, 28, 31, 34];
-
-        if minus_1.contains(&self.agent_pos) {
-            -1
-        } else if plus_1.contains(&self.agent_pos) {
-            1
+        let mut rng = rand::thread_rng();
+        let chances_stay = vec![0, 0, 1];
+        let chances_move = vec![0, 1, 1];
+        let mut result = 0;
+        if self.agent_pos == 4 {
+            result = chances_stay[rng.gen_range(0..3)];
+            result
+        } else if self.agent_pos == 5 {
+            result = chances_move[rng.gen_range(0..3)];
+            result
         } else {
             0
         }
     }
 
     pub fn step(&mut self, action: i32) {
-        let mut rng = rand::thread_rng();
         if self.A.contains(&action) && !self.is_game_over() {
             if self.agent_pos == 0 {
-                let random_index = rng.gen_range(0..3); // 0 1 2
                 match action {
-                    0 => self.agent_pos = random_index + 1, // 1 2 3
-                    1 => self.agent_pos = random_index + 4, // 4 5 6
-                    _ => self.agent_pos = random_index + 7  // 7 8 9
+                    0 => self.agent_pos = 1,
+                    1 => self.agent_pos = 2,
+                    2 => self.agent_pos = 3,
+                    _ => println!("Action impossible")
                 }
-            } else if self.agent_pos == 1 {
+            } else {
                 match action {
-                    0 => self.agent_pos = 10, // 1 2 3
-                    1 => self.agent_pos = 11, // 4 5 6
-                    _ => self.agent_pos = 12  // 7 8 9
-                }
-            } else if self.agent_pos == 2 {
-                match action {
-                    0 => self.agent_pos = 13, // 1 2 3
-                    1 => self.agent_pos = 14, // 4 5 6
-                    _ => self.agent_pos = 15  // 7 8 9
-                }
-            } else if self.agent_pos == 3 {
-                match action {
-                    0 => self.agent_pos = 16, // 1 2 3
-                    1 => self.agent_pos = 17, // 4 5 6
-                    _ => self.agent_pos = 18  // 7 8 9
-                }
-            } else if self.agent_pos == 4 {
-                match action {
-                    0 => self.agent_pos = 19, // 1 2 3
-                    1 => self.agent_pos = 20, // 4 5 6
-                    _ => self.agent_pos = 21  // 7 8 9
-                }
-            } else if self.agent_pos == 5 {
-                match action {
-                    0 => self.agent_pos = 22, // 1 2 3
-                    1 => self.agent_pos = 23, // 4 5 6
-                    _ => self.agent_pos = 24  // 7 8 9
-                }
-            } else if self.agent_pos == 6 {
-                match action {
-                    0 => self.agent_pos = 25, // 1 2 3
-                    1 => self.agent_pos = 26, // 4 5 6
-                    _ => self.agent_pos = 27  // 7 8 9
-                }
-            } else if self.agent_pos == 7 {
-                match action {
-                    0 => self.agent_pos = 28, // 1 2 3
-                    1 => self.agent_pos = 29, // 4 5 6
-                    _ => self.agent_pos = 30  // 7 8 9
-                }
-            } else if self.agent_pos == 8 {
-                match action {
-                    0 => self.agent_pos = 31, // 1 2 3
-                    1 => self.agent_pos = 32, // 4 5 6
-                    _ => self.agent_pos = 33  // 7 8 9
-                }
-            } else if self.agent_pos == 9 {
-                match action {
-                    0 => self.agent_pos = 34, // 1 2 3
-                    1 => self.agent_pos = 35, // 4 5 6
-                    _ => self.agent_pos = 36  // 7 8 9
+                    3 => self.agent_pos = 4,
+                    _ => self.agent_pos = 5
                 }
             }
         }
@@ -218,238 +161,194 @@ impl Shifumi {
 
     pub fn reset(&mut self) {
         self.agent_pos = 0;
+        self.deleted_door = 0;
     }
 
-    pub fn display(&self) {
+
+    pub fn display(&mut self) {
         if self.agent_pos == 0 {
-            println!("Début du jeu, choisissez Pierre, Feuille ou Ciseaux !");
+            println!("Bienvenue au Monty Hall ! Choisissez une des portes suivantes:");
+            println!("|A| |B| |C|");
         } else if self.agent_pos == 1 {
-            println!("Round 1 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : P // Choix de l'adversaire : P");
-            println!("Score : 0");
-            println!("Moyen tout ça..");
+            let mut rng = rand::thread_rng();
+            self.deleted_door = rng.gen_range(0..2);
+            if self.deleted_door == 0 {
+                println!("Vous avez choisi la porte A");
+                println!("|A| |x| |C|"); // delete door 0
+            } else {
+                println!("Vous avez choisi la porte A");
+                println!("|A| |B| |x|"); // delete door 1
+            }
         } else if self.agent_pos == 2 {
-            println!("Round 1 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : P // Choix de l'adversaire : F");
-            println!("Score : -1");
-            println!("Pas de chance...");
+            let mut rng = rand::thread_rng();
+            self.deleted_door = rng.gen_range(2..4);
+            if self.deleted_door == 2 {
+                println!("Vous avez choisi la porte B");
+                println!("|x| |B| |C|"); // delete door 2
+            } else {
+                println!("Vous avez choisi la porte B");
+                println!("|A| |B| |x|"); // delete door 3
+            }
         } else if self.agent_pos == 3 {
-            println!("Round 1 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : P // Choix de l'adversaire : C");
-            println!("Score : 1");
-            println!("Bien joué !");
+            let mut rng = rand::thread_rng();
+            self.deleted_door = rng.gen_range(4..6);
+            if self.deleted_door == 4 {
+                println!("Vous avez choisi la porte C");
+                println!("|x| |B| |C|"); // delete door 4
+            } else {
+                println!("Vous avez choisi la porte C");
+                println!("|A| |x| |C|"); // delete door 5
+            }
         } else if self.agent_pos == 4 {
-            println!("Round 1 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : F // Choix de l'adversaire : P");
-            println!("Score : 1");
-            println!("Bien joué !");
-        } else if self.agent_pos == 5 {
-            println!("Round 1 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : F // Choix de l'adversaire : F");
-            println!("Score : 0");
-            println!("Moyen tout ça..");
-        } else if self.agent_pos == 6 {
-            println!("Round 1 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : F // Choix de l'adversaire : C");
-            println!("Score : -1");
-            println!("Pas de chance...");
-        } else if self.agent_pos == 7 {
-            println!("Round 1 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : C // Choix de l'adversaire : P");
-            println!("Score : -1");
-            println!("Pas de chance...");
-        } else if self.agent_pos == 8 {
-            println!("Round 1 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : C // Choix de l'adversaire : F");
-            println!("Score : 1");
-            println!("Bien joué !");
-        } else if self.agent_pos == 9 {
-            println!("Round 1 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : C // Choix de l'adversaire : C");
-            println!("Score : 0");
-            println!("Moyen tout ça..");
-        } else if self.agent_pos == 10 {
-            println!("Round 1 : P P");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : P // Choix de l'adversaire : P");
-            println!("Score Final: 0");
-            println!("Moyen tout ça..");
-        } else if self.agent_pos == 11 {
-            println!("Round 1 : P P");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : F // Choix de l'adversaire : P");
-            println!("Score Final: 1");
-            println!("Bien joué !");
-        } else if self.agent_pos == 12 {
-            println!("Round 1 : P P");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : C // Choix de l'adversaire : P");
-            println!("Score Final: -1");
-            println!("Mauvais choix...");
-        } else if self.agent_pos == 13 {
-            println!("Round 1 : P F");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : P // Choix de l'adversaire : P");
-            println!("Score Final: -1");
-            println!("Mauvais choix...");
-        }  else if self.agent_pos == 14 {
-            println!("Round 1 : P F");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : F // Choix de l'adversaire : P");
-            println!("Score Final: 0");
-            println!("Pas trop mal");
-        } else if self.agent_pos == 15 {
-            println!("Round 1 : P F");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : C // Choix de l'adversaire : P");
-            println!("Score Final: -2");
-            println!("Wasted !");
-        } else if self.agent_pos == 16 {
-            println!("Round 1 : P C");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : P // Choix de l'adversaire : P");
-            println!("Score Final: 1");
-            println!("Pas trop mal");
-        } else if self.agent_pos == 17 {
-            println!("Round 1 : P C");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : F // Choix de l'adversaire : P");
-            println!("Score Final: 2");
-            println!("Incroyable !");
-        } else if self.agent_pos == 18 {
-            println!("Round 1 : P C");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : C // Choix de l'adversaire : P");
-            println!("Score Final: 0");
-            println!("Mauvais choix !");
-        } else if self.agent_pos == 19 {
-            println!("Round 1 : F P");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : P // Choix de l'adversaire : F");
-            println!("Score Final: 0");
-            println!("Mauvais choix !");
-        } else if self.agent_pos == 20 {
-            println!("Round 1 : F P");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : F // Choix de l'adversaire : F");
-            println!("Score Final: 1");
-            println!("Okayokay");
-        } else if self.agent_pos == 21 {
-            println!("Round 1 : F P");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : C // Choix de l'adversaire : F");
-            println!("Score Final: 2");
-            println!("Incrédiblé!");
-        } else if self.agent_pos == 22 {
-            println!("Round 1 : F F");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : P // Choix de l'adversaire : F");
-            println!("Score Final: -1");
-            println!("Mauvais choix!");
-        } else if self.agent_pos == 23 {
-            println!("Round 1 : F F");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : F // Choix de l'adversaire : F");
-            println!("Score Final: 0");
-            println!("Moyen tout ça");
-        } else if self.agent_pos == 24 {
-            println!("Round 1 : F F");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : C // Choix de l'adversaire : F");
-            println!("Score Final: 1");
-            println!("Bien vu !");
-        } else if self.agent_pos == 25 {
-            println!("Round 1 : F C");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : P // Choix de l'adversaire : F");
-            println!("Score Final: -2");
-            println!("NUL");
-        } else if self.agent_pos == 26 {
-            println!("Round 1 : F C");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : F // Choix de l'adversaire : F");
-            println!("Score Final: -1");
-            println!("Dommage");
-        } else if self.agent_pos == 27 {
-            println!("Round 1 : F C");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : C // Choix de l'adversaire : F");
-            println!("Score Final: 0");
-            println!("Bien rattrapé");
-        } else if self.agent_pos == 28 {
-            println!("Round 1 : C P");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : P // Choix de l'adversaire : C");
-            println!("Score Final: 0");
-            println!("Bien rattrapé");
-        } else if self.agent_pos == 29 {
-            println!("Round 1 : C P");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : F // Choix de l'adversaire : C");
-            println!("Score Final: -2");
-            println!("Aie aie aie");
-        } else if self.agent_pos == 30 {
-            println!("Round 1 : C P");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : C // Choix de l'adversaire : C");
-            println!("Score Final: -1");
-            println!("Aie aie aie");
-        } else if self.agent_pos == 31 {
-            println!("Round 1 : C F");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : P // Choix de l'adversaire : C");
-            println!("Score Final: 2");
-            println!("Champion !");
-        } else if self.agent_pos == 32 {
-            println!("Round 1 : C F");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : F // Choix de l'adversaire : C");
-            println!("Score Final: 0");
-            println!("Oh non !");
-        } else if self.agent_pos == 33 {
-            println!("Round 1 : C F");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : C // Choix de l'adversaire : C");
-            println!("Score Final: 1");
-            println!("Pas mal");
-        } else if self.agent_pos == 34 {
-            println!("Round 1 : C C");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : P // Choix de l'adversaire : C");
-            println!("Score Final: 1");
-            println!("Pas mal");
-        } else if self.agent_pos == 35 {
-            println!("Round 1 : C C");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : F // Choix de l'adversaire : C");
-            println!("Score Final: -1");
-            println!("Mauvais choix");
+            if self.deleted_door == 0 {
+                if self.score() == 0 {
+                    println!("Vous n'avez pas changé de porte, et gardez donc la A");
+                    println!("Dommage, c'est perdu !");
+                    println!("|L| |x| |W|")
+                } else {
+                    println!("Vous n'avez pas changé de porte, et gardez donc la A");
+                    println!("Quelle chance !");
+                    println!("|W| |x| |L|")
+                }
+            } else if self.deleted_door == 1 {
+                if self.score() == 0 {
+                    println!("Vous n'avez pas changé de porte, et gardez donc la A");
+                    println!("Dommage, c'est perdu !");
+                    println!("|L| |W| |x|")
+                } else {
+                    println!("Vous n'avez pas changé de porte, et gardez donc la A");
+                    println!("Quelle chance !");
+                    println!("|W| |L| |x|")
+                }
+            } else if self.deleted_door == 3 {
+                if self.score() == 0 {
+                    println!("Vous n'avez pas changé de porte, et gardez donc la B");
+                    println!("Dommage, c'est perdu !");
+                    println!("|W| |L| |x|")
+                } else {
+                    println!("Vous n'avez pas changé de porte, et gardez donc la B");
+                    println!("Quelle chance !");
+                    println!("|L| |W| |x|")
+                }
+            } else if self.deleted_door == 2 {
+                if self.score() == 0 {
+                    println!("Vous n'avez pas changé de porte, et gardez donc la B");
+                    println!("Dommage, c'est perdu !");
+                    println!("|x| |L| |W|")
+                } else {
+                    println!("Vous n'avez pas changé de porte, et gardez donc la B");
+                    println!("Quelle chance !");
+                    println!("|x| |W| |L|")
+                }
+            } else if self.deleted_door == 4 {
+                if self.score() == 0 {
+                    println!("Vous n'avez pas changé de porte, et gardez donc la C");
+                    println!("Dommage, c'est perdu !");
+                    println!("|x| |W| |L|")
+                } else {
+                    println!("Vous n'avez pas changé de porte, et gardez donc la C");
+                    println!("Quelle chance !");
+                    println!("|x| |L| |W|")
+                }
+            } else {
+                if self.score() == 0 {
+                    println!("Vous n'avez pas changé de porte, et gardez donc la C");
+                    println!("Dommage, c'est perdu !");
+                    println!("|W| |x| |L|")
+                } else {
+                    println!("Vous n'avez pas changé de porte, et gardez donc la C");
+                    println!("Quelle chance !");
+                    println!("|L| |x| |W|")
+                }
+            }
         } else {
-            println!("Round 1 : C C");
-            println!("Round 2 :\nSHI...\nFU...\nMI!!!\n");
-            println!("Votre choix : C // Choix de l'adversaire : C");
-            println!("Score Final: 0");
-            println!("Moyen tout ça");
+            if self.deleted_door == 0 {
+                if self.score() == 0 {
+                    println!("Vous avez changé de porte, et passez donc sur la C");
+                    println!("Dommage, c'est perdu !");
+                    println!("|W| |x| |L|")
+                } else {
+                    println!("Vous avez changé de porte, et passez donc sur la C");
+                    println!("Quelle chance !");
+                    println!("|L| |x| |W|")
+                }
+            } else if self.deleted_door == 1 {
+                if self.score() == 0 {
+                    println!("Vous avez changé de porte, et passez donc sur la B");
+                    println!("Dommage, c'est perdu !");
+                    println!("|W| |L| |x|")
+                } else {
+                    println!("Vous avez changé de porte, et passez donc sur la B");
+                    println!("Quelle chance !");
+                    println!("|L| |W| |x|")
+                }
+            } else if self.deleted_door == 2 {
+                if self.score() == 0 {
+                    println!("Vous avez changé de porte, et passez donc sur la C");
+                    println!("Dommage, c'est perdu !");
+                    println!("|x| |W| |L|")
+                } else {
+                    println!("Vous avez changé de porte, et passez donc sur la C");
+                    println!("Quelle chance !");
+                    println!("|x| |L| |W|")
+                }
+            } else if self.deleted_door == 3 {
+                if self.score() == 0 {
+                    println!("Vous avez changé de porte, et passez donc sur la A");
+                    println!("Dommage, c'est perdu !");
+                    println!("|L| |W| |x|")
+                } else {
+                    println!("Vous avez changé de porte, et passez donc sur la A");
+                    println!("Quelle chance !");
+                    println!("|W| |L| |x|")
+                }
+            } else if self.deleted_door == 4 {
+                if self.score() == 0 {
+                    println!("Vous avez changé de porte, et passez donc sur la B");
+                    println!("Dommage, c'est perdu !");
+                    println!("|x| |L| |W|")
+                } else {
+                    println!("Vous avez changé de porte, et passez donc sur la B");
+                    println!("Quelle chance !");
+                    println!("|x| |W| |L|")
+                }
+            } else {
+                if self.score() == 0 {
+                    println!("Vous avez changé de porte, et passez donc sur la A");
+                    println!("Dommage, c'est perdu !");
+                    println!("|L| |x| |W|")
+                } else {
+                    println!("Vous avez changé de porte, et passez donc sur la A");
+                    println!("Quelle chance !");
+                    println!("|W| |x| |L|")
+                }
+            }
         }
     }
 
     pub fn run_game_vec(&mut self, Pi: Vec<i32>){
-        self.reset();
+        println!("Etat initial :\n");
         self.display();
         println!("\n");
+        let mut step: i32 = 1;
         while !self.is_game_over() {
+            println!("Step {:?}: \n",step);
             self.step(Pi[self.agent_pos as usize]);
             self.display();
             println!("\n");
+            step += 1;
         }
     }
 
+
     pub fn run_game_hashmap(&mut self, Pi: HashMap<i32, i32>) {
+        println!("Etat initial :\n");
         self.reset();
         self.display();
         println!("\n");
         let mut step: i32 = 1;
         while !self.is_game_over() && step <= 50 {
+            println!("Step {:?}: \n", step);
             if let Some(&action) = Pi.get(&self.agent_pos) {
                 println!("Action for position {}: {}", self.agent_pos, action);
                 self.step(action);
@@ -484,6 +383,7 @@ impl Shifumi {
             step += 1;
         }
     }
+
 
     pub fn policy_iteration(&mut self,
                             theta: f32,
@@ -664,7 +564,6 @@ impl Shifumi {
         Pi
     }
 
-
     pub fn monte_carlo_exploring_starts(&mut self,
                                         gamma: f32,
                                         nb_iter: i32,
@@ -760,7 +659,6 @@ impl Shifumi {
                                     epsilon: f32,
                                     nb_iter: i32,
                                     max_steps: i32) -> HashMap<i32, HashMap<i32, f32>> {
-
         let mut rng = rand::thread_rng();
 
         let mut Pi: HashMap<i32, HashMap<i32, f32>> = Default::default();
@@ -780,7 +678,7 @@ impl Shifumi {
 
                 if !Pi.contains_key(&s) {
                     let random_Vec = self.generate_random_probabilities();
-                    let mut prob_per_action : HashMap<i32, f32> = HashMap::new();
+                    let mut prob_per_action: HashMap<i32, f32> = HashMap::new();
                     for action in 0..random_Vec.len() {
                         prob_per_action.insert(action as i32, random_Vec[action]);
                     }
@@ -815,7 +713,7 @@ impl Shifumi {
                     t -= 1;
                 }
 
-                if !is_in{
+                if !is_in {
                     let entry = returns.entry((*s, *a)).or_insert(Vec::new());
                     entry.push(G);
 
@@ -837,7 +735,7 @@ impl Shifumi {
                         }
                     }
 
-                    let mut A:  HashMap<i32, i32> = HashMap::new();
+                    let mut A: HashMap<i32, i32> = HashMap::new();
                     A.insert(*s, best_a.unwrap());
 
                     for (state, action) in &A {
