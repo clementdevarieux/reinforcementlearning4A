@@ -15,11 +15,27 @@ use colored::*;
 fn main() {
 
     let mut secret0 = Env::SecretEnv0::SecretEnv0::new();
-    //let policy = secret0.value_iteration(0.0001f32, 0.999f32);
-    let res = secret0.monte_carlo_exploring_starts(0.99999f32, 1000, 10000);
+    // let policy = secret0.value_iteration(0.0001f32, 0.999f32);
+    let res = secret0.monte_carlo_off_policy(0.99999f32,0.5, 100000, 10000);
+    // let res = secret0.monte_carlo_exploring_starts(0.99999f32, 100000, 10000);
     println!("{:?}", res);
 
-    secret0.display();
+    secret0.run_game_hashmap(res);
+
+    // let mut secret1 = Env::SecretEnv1::SecretEnv1::new();
+    //let policy = secret0.value_iteration(0.0001f32, 0.999f32);
+    // let res = secret1.monte_carlo_fv_on_policy(0.99999f32,0.10, 1000, 10000);
+    // println!("{:?}", res);
+
+    // secret1.step(2);
+
+    // secret1.display();
+    //
+    // println!("{:?}",secret1.A());
+    // println!("{:?}",secret1.available_actions());
+    // println!("{}",secret1.num_actions());
+
+
     //
     // pub fn display_matrix(matrix: &[i32], rows: usize, cols: usize) {
     //     for i in 0..rows {
