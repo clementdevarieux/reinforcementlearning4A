@@ -11,21 +11,29 @@ use std::iter::IntoIterator;
 use rand::seq::SliceRandom;
 use std::collections::HashMap;
 use colored::*;
+use crate::secret_env::lib_secret_env::LIB;
 
 fn main() {
-    let mut secret3 = Env::SecretEnv3::SecretEnv3::new();
 
-    secret3.reset();
-    secret3.display();
-    println!("{:?}", secret3.autorized_actions());
-    println!("{:?}",secret3.A());
-    println!("{:?}",secret3.available_actions_len());
+    // let secret_env_3_new: libloading::Symbol<unsafe extern fn() -> *mut c_void> =
+    //     unsafe { LIB.get(b"secret_env_3_new") }.expect("Failed to load function `secret_env_3_new`");
+    // unsafe {
+    //     let env = secret_env_3_new();
+    //     dbg!(env);
+    //     let secret_env_3_display: libloading::Symbol<unsafe extern fn(*const c_void)> =
+    //         unsafe { LIB.get(b"secret_env_3_display") }.expect("Failed to load function `secret_env_3_display`");
+    //     dbg!(secret_env_3_display(env));
+    // }
+
+
+    // let mut secret3 = Env::SecretEnv3::SecretEnv3::new();
+
     // let policy = secret0.value_iteration(0.0001f32, 0.999f32);
     // let res = secret0.monte_carlo_off_policy(0.99999f32,0.5, 1000, 10000);
-    let res = secret3.monte_carlo_off_policy(0.99f32,0.10, 1000, 10000);
+    // let res = secret3.Q_learning_off_policy(0.99f32,0.10, 0.1, 10000, 10000);
     // println!("{:?}", res);
 
-    secret3.run_game_hashmap(res);
+    // secret3.run_game_hashmap(res);
 
     // let mut secret2 = Env::SecretEnv2::SecretEnv2::new();
     // secret2.display();

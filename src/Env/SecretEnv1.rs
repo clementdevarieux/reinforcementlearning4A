@@ -74,10 +74,10 @@ impl SecretEnv1 {
     }
 
     pub fn is_forbidden(&self, action: i32) -> bool {
-        let secret_env_0_is_forbidden: libloading::Symbol<unsafe extern fn(*const c_void, usize) -> bool> =
-            unsafe{LIB.get(b"secret_env_0_is_forbidden").expect("Failed to load function `secret_env_0_is_forbidden`")};
+        let secret_env_1_is_forbidden: libloading::Symbol<unsafe extern fn(*const c_void, usize) -> bool> =
+            unsafe{LIB.get(b"secret_env_1_is_forbidden").expect("Failed to load function `secret_env_1_is_forbidden`")};
         unsafe {
-            secret_env_0_is_forbidden(self.env, action as usize)
+            secret_env_1_is_forbidden(self.env, action as usize)
         }
     }
 
@@ -92,73 +92,73 @@ impl SecretEnv1 {
     }
 
     pub fn num_rewards(&self) -> i32 {
-        let secret_env_0_num_rewards: libloading::Symbol<unsafe extern fn() -> usize> =
-            unsafe{LIB.get(b"secret_env_0_num_rewards").expect("Failed to load function `secret_env_0_num_rewards`")};
+        let secret_env_1_num_rewards: libloading::Symbol<unsafe extern fn() -> usize> =
+            unsafe{LIB.get(b"secret_env_1_num_rewards").expect("Failed to load function `secret_env_1_num_rewards`")};
         unsafe {
-            secret_env_0_num_rewards() as i32
+            secret_env_1_num_rewards() as i32
         }
     }
 
     pub fn R(&self, pos: usize) -> f32 {
-        let secret_env_0_reward: libloading::Symbol<unsafe extern fn(usize) -> f32> =
-            unsafe{LIB.get(b"secret_env_0_reward").expect("Failed to load function `secret_env_0_reward`")};
+        let secret_env_1_reward: libloading::Symbol<unsafe extern fn(usize) -> f32> =
+            unsafe{LIB.get(b"secret_env_1_reward").expect("Failed to load function `secret_env_1_reward`")};
         unsafe {
-            secret_env_0_reward(pos)
+            secret_env_1_reward(pos)
         }
     }
 
     pub fn is_game_over(&self) -> bool {
-        let secret_env_0_is_game_over: libloading::Symbol<unsafe extern fn(*const c_void) -> bool> =
-            unsafe{LIB.get(b"secret_env_0_is_game_over").expect("Failed to load function `secret_env_0_is_game_over`")};
+        let secret_env_1_is_game_over: libloading::Symbol<unsafe extern fn(*const c_void) -> bool> =
+            unsafe{LIB.get(b"secret_env_1_is_game_over").expect("Failed to load function `secret_env_1_is_game_over`")};
         unsafe {
-            secret_env_0_is_game_over(self.env)
+            secret_env_1_is_game_over(self.env)
         }
     }
 
     pub fn display(&self) {
-        let secret_env_0_display: libloading::Symbol<unsafe extern fn(*const c_void)> =
-            unsafe{LIB.get(b"secret_env_0_display").expect("Failed to load function `secret_env_0_display`")};
+        let secret_env_1_display: libloading::Symbol<unsafe extern fn(*const c_void)> =
+            unsafe{LIB.get(b"secret_env_1_display").expect("Failed to load function `secret_env_1_display`")};
         unsafe {
-            secret_env_0_display(self.env)
+            secret_env_1_display(self.env)
         }
     }
 
     pub fn from_random_state(&mut self) -> *mut c_void {
-        let secret_env_0_from_random_state: libloading::Symbol<unsafe extern fn() -> *mut c_void> =
-            unsafe{LIB.get(b"secret_env_0_from_random_state").expect("Failed to load function `secret_env_0_from_random_state`")};
+        let secret_env_1_from_random_state: libloading::Symbol<unsafe extern fn() -> *mut c_void> =
+            unsafe{LIB.get(b"secret_env_1_from_random_state").expect("Failed to load function `secret_env_1_from_random_state`")};
         unsafe {
-            secret_env_0_from_random_state()
+            secret_env_1_from_random_state()
         }
     }
 
     pub fn score(&self) -> f32 {
-        let secret_env_0_score: libloading::Symbol<unsafe extern fn(*const c_void) -> f32> =
-            unsafe{LIB.get(b"secret_env_0_score").expect("Failed to load function `secret_env_0_score`")};
+        let secret_env_1_score: libloading::Symbol<unsafe extern fn(*const c_void) -> f32> =
+            unsafe{LIB.get(b"secret_env_1_score").expect("Failed to load function `secret_env_1_score`")};
         unsafe {
-            secret_env_0_score(self.env)
+            secret_env_1_score(self.env)
         }
     }
 
     pub fn step(&mut self, action: i32) {
-        let secret_env_0_step: libloading::Symbol<unsafe extern fn(*mut c_void, usize)> =
-            unsafe{LIB.get(b"secret_env_0_step").expect("Failed to load function `secret_env_0_step`")};
+        let secret_env_1_step: libloading::Symbol<unsafe extern fn(*mut c_void, usize)> =
+            unsafe{LIB.get(b"secret_env_1_step").expect("Failed to load function `secret_env_1_step`")};
         unsafe{
-            secret_env_0_step(self.env, action as usize);
+            secret_env_1_step(self.env, action as usize);
         }
     }
     pub fn reset(&self) {
-        let secret_env_0_reset: libloading::Symbol<unsafe extern fn(*const c_void) -> usize> =
-            unsafe{LIB.get(b"secret_env_0_reset").expect("Failed to load function `secret_env_0_reset`")};
+        let secret_env_1_reset: libloading::Symbol<unsafe extern fn(*const c_void) -> usize> =
+            unsafe{LIB.get(b"secret_env_1_reset").expect("Failed to load function `secret_env_1_reset`")};
         unsafe {
-            secret_env_0_reset(self.env);
+            secret_env_1_reset(self.env);
         }
     }
 
     pub fn state_id(&self) -> usize{
-        let secret_env_0_state_id: libloading::Symbol<unsafe extern fn(*const c_void) -> usize> =
-            unsafe{LIB.get(b"secret_env_0_state_id").expect("Failed to load function `secret_env_0_state_id`")};
+        let secret_env_1_state_id: libloading::Symbol<unsafe extern fn(*const c_void) -> usize> =
+            unsafe{LIB.get(b"secret_env_1_state_id").expect("Failed to load function `secret_env_1_state_id`")};
         unsafe {
-            secret_env_0_state_id(self.env)
+            secret_env_1_state_id(self.env)
         }
     }
 
