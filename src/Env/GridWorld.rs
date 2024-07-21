@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::io::Write;
 use colored::*;
 use rand::distributions::{Distribution, Uniform};
+use rand::prelude::SliceRandom;
 
 pub struct GridWorld {
     pub agent_pos: i32,
@@ -213,20 +214,20 @@ impl GridWorld {
         }
     }
 
-    pub fn score(&self) -> i32 {
+    pub fn score(&self) -> f32 {
         let minus_1: Vec<i32> = vec![0, 1, 2, 3, 4, 5, 6, 7,
                                      13, 14, 20, 21, 27,
                                      28, 34, 35, 41, 42,
                                      43, 44, 45, 46, 47, 48];
 
         if minus_1.contains(&self.agent_pos) {
-            -1
+            -1.00
         } else if self.agent_pos == 12 {
-            -3
+            -3.00
         } else if self.agent_pos == 40 {
-            1
+            1.00
         } else {
-            0
+            0.00
         }
     }
 
@@ -512,9 +513,6 @@ impl GridWorld {
                                         gamma: f32,
                                         nb_iter: i32,
                                         max_steps: i32) -> HashMap<i32, i32> {
-        let len_S = self.num_states as usize;
-        let len_A = self.A.len();
-        let len_R = self.R.len();
         let mut rng = rand::thread_rng();
 
         let mut Pi = HashMap::new();
@@ -625,6 +623,8 @@ impl GridWorld {
                 let s = self.agent_pos;
                 let aa = self.available_actions();
 
+                println!("{:?}", aa);
+
                 if !Pi.contains_key(&s) {
                     let random_Vec = self.generate_random_probabilities();
                     let mut prob_per_action : HashMap<i32, f32> = HashMap::new();
@@ -633,6 +633,9 @@ impl GridWorld {
                     }
                     Pi.insert(s.clone(), prob_per_action);
                 }
+
+                println!("{:?}", Pi);
+
 
                 let a = self.select_action(&Pi.get(&s).unwrap());
 
@@ -816,6 +819,110 @@ impl GridWorld {
                     }
                 }
             }
+        }
+        Pi
+    }
+
+    pub fn Q_learning_off_policy(&mut self,
+                                 gamma: f32,
+                                 epsilon: f32,
+                                 alpha: f32,
+                                 nb_iter: i32,
+                                 max_steps: i32) -> HashMap<i32, i32> {
+        let mut rng = rand::thread_rng();
+
+        let mut Q: HashMap<(i32, i32), f32> = HashMap::new();
+        let mut Pi: HashMap<i32, i32> = HashMap::new();
+
+        for _ in 0..nb_iter {
+            self.reset();
+            let mut steps_count: i32 = 0;
+
+            while steps_count < max_steps && !self.is_game_over() {
+
+                let s = self.agent_pos;
+                let aa = self.available_actions();
+
+                for a in aa {
+                    if !Q.contains_key(&(s, a)) {
+                        Q.insert((s, a), rng.gen());
+                    }
+                }
+
+                let random_value: f32 = rng.gen();
+                let mut a ;
+                if random_value < epsilon {
+                    a = *self.available_actions().choose(&mut rng).unwrap()
+                } else {
+                    let mut best_a: Option<i32> = None;
+                    let mut best_a_score: Option<f32> = None;
+
+                    for a in self.available_actions() {
+                        if best_a == None || Q.get(&(s, a)) > best_a_score.as_ref() {
+                            best_a = Option::from(a);
+                            best_a_score = Q.get(&(s, a)).cloned();
+                        }
+                    }
+                    a = best_a.unwrap();
+                }
+
+                let prev_score = self.score();
+                self.step(a);
+                let r = self.score() - prev_score;
+
+                let s_p = self.agent_pos;
+                let aa_p = self.available_actions();
+                let target: f32;
+
+                if self.is_game_over(){
+                    target = r;
+                } else {
+                    let mut best_a_p: Option<i32> = None;
+                    let mut best_a_score_p: Option<f32> = None;
+                    for a_p in aa_p {
+                        if !Q.contains_key(&(s_p, a_p)) {
+                            Q.insert((s_p, a_p), rng.gen());
+                        }
+                        if best_a_p == None || Q.get(&(s_p, a_p)) > best_a_score_p.as_ref() {
+                            best_a_p = Option::from(a_p);
+                            best_a_score_p = Q.get(&(s_p, a_p)).cloned();
+                        }
+                    }
+                    target = r + gamma * best_a_score_p.unwrap();
+                }
+
+                let updated_gain = (1.00 - alpha) * Q.get(&(s, a)).unwrap() + alpha * target;
+                Q.insert((s, a), updated_gain);
+
+                steps_count += 1;
+            }
+        }
+        let mut All_States_Actions: HashMap<i32, Vec<i32>> = HashMap::new();
+
+        for (s, a) in Q.keys(){
+            if !All_States_Actions.contains_key(s) {
+                All_States_Actions.entry(*s).or_insert_with(Vec::new).push(*a);
+            }
+            if All_States_Actions.contains_key(s){
+                let myVec = All_States_Actions.get(&s).unwrap();
+                if !myVec.contains(a){
+                    All_States_Actions.entry(*s).or_insert_with(Vec::new).push(*a);
+                }
+            }
+        }
+
+        for (s, a_Vec) in All_States_Actions.iter() {
+
+            let mut best_a: Option<i32> = None;
+            let mut best_a_score: Option<f32> = None;
+            for action in a_Vec {
+                if best_a == None || Q.get(&(*s, *action)) > best_a_score.as_ref() {
+                    best_a = Option::from(*action);
+                    best_a_score = Q.get(&(*s, *action)).cloned();
+                }
+            }
+
+            Pi.insert(*s, best_a.unwrap());
         }
         Pi
     }
