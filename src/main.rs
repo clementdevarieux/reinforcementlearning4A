@@ -736,26 +736,25 @@ fn main() {
     //     // secret0.run_game_hashmap(res);
     //     secret0.run_game_hashmap(res);
     // }
-    let mut lineworld = Env::LineWorld::LineWorld::init();
-    for _ in 0..1{
-        let res = lineworld.sarsa(0.99f32,0.2, 0.20, 1000, 10);
-        println!("{:?}", res);
-        lineworld.run_game_hashmap(res);
-        // println!("{:?}", res);
-    }
+    // let mut lineworld = Env::LineWorld::LineWorld::init();
+    // for _ in 0..10{
+    //     let res = lineworld.sarsa(0.99f32,0.10, 0.10, 10000, 10);
+    //     lineworld.run_game_hashmap(res);
+    //     // println!("{:?}", res);
+    // }
     // for _ in 0..10{
     //     let res = lineworld.sarsa(0.99f32,0.2, 0.10, 1000, 10);
     //     lineworld.run_game_hashmap(res);
     //     // println!("{:?}", res);
     // }
     //
-    // let mut grid = Env::GridWorld::GridWorld::init();
+    let mut grid = Env::GridWorld::GridWorld::init();
 
-    // for _ in 0..10 {
-    //     let res = grid.Q_learning_off_policy(0.99f32,0.10, 0.10, 10000, 10);
-    //     grid.run_game_hashmap(res);
-    //     // println!("{:?}", res);
-    // }
+    for _ in 0..10 {
+        let res = grid.sarsa(0.99f32,0.20, 0.10, 10000, 10);
+        grid.run_game_hashmap(res);
+        // println!("{:?}", res);
+    }
     //
     // let mut shifumi = Env::Shifumi::Shifumi::init();
     //

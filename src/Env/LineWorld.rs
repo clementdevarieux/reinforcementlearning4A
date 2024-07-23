@@ -830,9 +830,6 @@ impl LineWorld {
             }
 
             while steps_count < max_steps && !self.is_game_over() {
-                // println!("self pos = {}", self.agent_pos);
-                // println!("a = {}", a);
-                // println!("actual score = {:?}", Q.get(&(self.agent_pos, a)));
 
                 let s = self.agent_pos;
 
@@ -842,7 +839,7 @@ impl LineWorld {
 
                 let s_p = self.agent_pos;
                 let aa_p = self.available_actions();
-                let a_p = 0;
+                let mut a_p = 0;
 
                 let target: f32;
 
@@ -855,7 +852,6 @@ impl LineWorld {
                         }
                     }
                     let random_value: f32 = rng.gen();
-                    let mut a_p ;
                     if random_value < epsilon {
                         a_p = *self.available_actions().choose(&mut rng).unwrap()
                     } else {
@@ -870,15 +866,12 @@ impl LineWorld {
                         }
                         a_p = best_a_p.unwrap();
                     }
-                    // println!("self pos_p = {}", self.agent_pos);
-                    // println!("a_p = {}", a_p);
                     target = r + gamma * Q.get(&(s_p, a_p)).unwrap();
                 }
 
                 let updated_gain = (1.00 - alpha) * Q.get(&(s, a)).unwrap() + alpha * target;
                 // println!("updated gain = {}", updated_gain);
                 Q.insert((s, a), updated_gain);
-                // println!("Upadted Q = {:?}", Q);
                 steps_count += 1;
 
                 a = a_p
@@ -908,8 +901,6 @@ impl LineWorld {
                     best_a_score = Q.get(&(*s, *action)).cloned();
                 }
             }
-            // println!("Q = {:?}", Q);
-
             Pi.insert(*s, best_a.unwrap());
         }
         Pi

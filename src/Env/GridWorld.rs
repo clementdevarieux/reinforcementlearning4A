@@ -969,26 +969,27 @@ impl GridWorld {
             }
 
             while steps_count < max_steps && !self.is_game_over() {
+                let s = self.agent_pos;
+
                 let prev_score = self.score();
                 self.step(a);
                 let r = self.score() - prev_score;
 
                 let s_p = self.agent_pos;
                 let aa_p = self.available_actions();
-
-                for a_p in aa_p {
-                    if !Q.contains_key(&(s_p, a_p)) {
-                        Q.insert((s_p, a_p), rng.gen());
-                    }
-                }
+                let mut a_p = 0;
 
                 let target: f32;
 
                 if self.is_game_over(){
                     target = r;
                 } else {
+                    for a_p in aa_p {
+                        if !Q.contains_key(&(s_p, a_p)) {
+                            Q.insert((s_p, a_p), rng.gen());
+                        }
+                    }
                     let random_value: f32 = rng.gen();
-                    let mut a_p ;
                     if random_value < epsilon {
                         a_p = *self.available_actions().choose(&mut rng).unwrap()
                     } else {
@@ -1006,10 +1007,11 @@ impl GridWorld {
                     target = r + gamma * Q.get(&(s_p, a_p)).unwrap();
                 }
 
-                let updated_gain = (1.00 - alpha) * Q.get(&(s, a)).unwrap() + alpha * (target - Q.get(&(s, a)).unwrap());
+                let updated_gain = (1.00 - alpha) * Q.get(&(s, a)).unwrap() + alpha * target;
                 Q.insert((s, a), updated_gain);
-
                 steps_count += 1;
+
+                a = a_p
             }
         }
         let mut All_States_Actions: HashMap<i32, Vec<i32>> = HashMap::new();
@@ -1036,8 +1038,6 @@ impl GridWorld {
                     best_a_score = Q.get(&(*s, *action)).cloned();
                 }
             }
-            println!("Q = {:?}", Q);
-
             Pi.insert(*s, best_a.unwrap());
         }
         Pi
