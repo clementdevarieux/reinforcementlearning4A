@@ -1,0 +1,12 @@
+MontyHall
+
+Average elapsed time over 5 policy_iteration (theta = 0.1, gammma = 0.99): 0ms
+Score moyen= 0.6
+Average elapsed time over 5 value_iteration (theta = 0.01, gammma = 0.99): 0ms
+Score moyen= 0.6
+Average elapsed time over 5 monte_carlo_exploring_starts (gammma = 0.99, nb_iter = 1000, max_steps = 10): 7ms
+Score moyen= 0.2
+Average elapsed time over 5 Q_learning_off_policy (gammma = 0.99, epsilon = 0.1, alpha = 0.1, nb_iter = 1000, max_steps = 10): 9ms
+Score moyen= 0.4
+Average elapsed time over 5 sarsa (gammma = 0.99, epsilon = 0.1, alpha = 0.1, nb_iter = 1000, max_steps = 10): 8ms
+Score moyen= 0.6

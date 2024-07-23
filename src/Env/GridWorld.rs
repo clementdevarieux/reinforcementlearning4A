@@ -623,7 +623,7 @@ impl GridWorld {
                 let s = self.agent_pos;
                 let aa = self.available_actions();
 
-                println!("{:?}", aa);
+                //println!("{:?}", aa);
 
                 if !Pi.contains_key(&s) {
                     let random_Vec = self.generate_random_probabilities();
@@ -634,7 +634,7 @@ impl GridWorld {
                     Pi.insert(s.clone(), prob_per_action);
                 }
 
-                println!("{:?}", Pi);
+                //println!("{:?}", Pi);
 
 
                 let a = self.select_action(&Pi.get(&s).unwrap());
