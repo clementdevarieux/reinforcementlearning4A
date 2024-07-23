@@ -1,0 +1,17 @@
+
+GridWorld
+
+Average elapsed time over 5 policy_iteration (theta = 0.1, gammma = 0.99): 22ms
+Score moyen= 1
+Average elapsed time over 5 value_iteration (theta = 0.01, gammma = 0.99): 15ms
+Score moyen= 1
+Average elapsed time over 5 monte_carlo_exploring_starts (gammma = 0.99, nb_iter = 10000, max_steps = 1000): 2631ms
+Score moyen= 1
+Average elapsed time over 5 monte_carlo_fv_on_policy (gammma = 0.99, epsilon = 0.1, nb_iter = 10000, max_steps = 1000): 3408ms
+Score moyen= 0.6
+Average elapsed time over 5 monte_carlo_off_policy (gammma = 0.99, epsilon = 0.1, nb_iter = 10000, max_steps = 1000): 2824ms
+Score moyen= 0.6
+Average elapsed time over 5 Q_learning_off_policy (gammma = 0.99, epsilon = 0.1, alpha = 0.1, nb_iter = 10000, max_steps = 1000): 561ms
+Score moyen= 1
+Average elapsed time over 5 sarsa (gammma = 0.99, epsilon = 0.1, alpha = 0.1, nb_iter = 10000, max_steps = 1000): 642ms
+Score moyen= 1

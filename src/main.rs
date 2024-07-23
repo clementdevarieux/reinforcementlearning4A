@@ -22,11 +22,12 @@ fn main() {
 
     let number_of_tests = 5;
 
+    /*
     //////// LineWorld
 
 
-    let mut lineworld = Env::LineWorld::LineWorld::init();
-    fs::create_dir("2024-07-23").unwrap();
+
+    //fs::create_dir("2024-07-23").unwrap();
     let file_path = PathBuf::from("./2024-07-23").join("LineWorld.txt");
     let mut file = OpenOptions::new()
         .write(true)
@@ -35,17 +36,21 @@ fn main() {
         .unwrap();
     writeln!(file, "LineWorld\n");
 
-    let mut durations_lineworld: Vec<u64> = Vec::new();
+    let mut durations_lineworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let theta = 0.1f32;
     let gamma = 0.99f32;
     for _ in 0..number_of_tests {
+        let mut lineworld = Env::LineWorld::LineWorld::init();
         let now = time::Instant::now();
         let res = lineworld.policy_iteration(theta, gamma);
-        durations_lineworld.push(now.elapsed().as_secs());
+        durations_lineworld.push(now.elapsed().as_millis());
         lineworld.run_game_vec(res);
-        lineworld.reset()
+        final_score.push(lineworld.score());
     }
-    let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
+    let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}ms", number_of_tests, theta, gamma, durations_lineworld.iter().sum::<u128>() / durations_lineworld.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     println!("{}", output);
     let mut file = OpenOptions::new()
         .write(true)
@@ -53,18 +58,24 @@ fn main() {
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
-    let mut durations_lineworld: Vec<u64> = Vec::new();
+    ///////////////////
+    let mut durations_lineworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let theta = 0.1f32;
     let gamma = 0.99f32;
     for _ in 0..number_of_tests {
+        let mut lineworld = Env::LineWorld::LineWorld::init();
         let now = time::Instant::now();
-        let res = lineworld.value_iteration(0.10f32, 0.99f32);
-        durations_lineworld.push(now.elapsed().as_secs());
+        let res = lineworld.value_iteration(theta, gamma);
+        durations_lineworld.push(now.elapsed().as_millis());
         lineworld.run_game_vec(res);
-        lineworld.reset()
+        final_score.push(lineworld.score());
     }
-    let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
+    let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}ms", number_of_tests, theta, gamma, durations_lineworld.iter().sum::<u128>() / durations_lineworld.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     println!("{}", output);
     let mut file = OpenOptions::new()
         .write(true)
@@ -72,97 +83,151 @@ fn main() {
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
-
-    let mut durations_lineworld: Vec<u64> = Vec::new();
+    writeln!(file, "{}", output_score);
+    ////////////////
+    let mut durations_lineworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let nb_iter = 1000;
     let max_steps = 10;
     for _ in 0..number_of_tests {
+        let mut lineworld = Env::LineWorld::LineWorld::init();
         let now = time::Instant::now();
         let res = lineworld.monte_carlo_exploring_starts(gamma, nb_iter, max_steps);
-        durations_lineworld.push(now.elapsed().as_secs());
+        durations_lineworld.push(now.elapsed().as_millis());
         lineworld.run_game_hashmap(res);
-        lineworld.reset()
+        final_score.push(lineworld.score());
     }
-    let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, nb_iter, max_steps, durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
+    let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, nb_iter, max_steps, durations_lineworld.iter().sum::<u128>() / durations_lineworld.len() as u128);
     println!("{}", output);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
+    ////////////////////
 
-    let mut durations_lineworld: Vec<u64> = Vec::new();
+    let mut durations_lineworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let nb_iter = 1000;
     let max_steps = 10;
     for _ in 0..number_of_tests {
+        let mut lineworld = Env::LineWorld::LineWorld::init();
         let now = time::Instant::now();
         let res = lineworld.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
-        durations_lineworld.push(now.elapsed().as_secs());
+        durations_lineworld.push(now.elapsed().as_millis());
         lineworld.run_game_random_hashmap(res);
-        lineworld.reset()
+        final_score.push(lineworld.score());
     }
-    let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
+    let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_lineworld.iter().sum::<u128>() / durations_lineworld.len() as u128);
     println!("{}", output);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
-    let mut durations_lineworld: Vec<u64> = Vec::new();
+    ///////////////
+    let mut durations_lineworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let nb_iter = 1000;
     let max_steps = 10;
     for _ in 0..number_of_tests {
+        let mut lineworld = Env::LineWorld::LineWorld::init();
         let now = time::Instant::now();
         let res = lineworld.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
-        durations_lineworld.push(now.elapsed().as_secs());
+        durations_lineworld.push(now.elapsed().as_millis());
         lineworld.run_game_hashmap(res);
-        lineworld.reset()
+        final_score.push(lineworld.score());
     }
-    let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
+    let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_lineworld.iter().sum::<u128>() / durations_lineworld.len() as u128);
     println!("{}", output);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
-    let mut durations_lineworld: Vec<u64> = Vec::new();
+    ///////////
+
+    let mut durations_lineworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let alpha = 0.10;
     let nb_iter = 1000;
     let max_steps = 10;
     for _ in 0..number_of_tests {
+        let mut lineworld = Env::LineWorld::LineWorld::init();
         let now = time::Instant::now();
         let res = lineworld.Q_learning_off_policy(gamma, epsilon, alpha, nb_iter, max_steps);
-        durations_lineworld.push(now.elapsed().as_secs());
+        durations_lineworld.push(now.elapsed().as_millis());
         lineworld.run_game_hashmap(res);
-        lineworld.reset()
+        final_score.push(lineworld.score());
     }
-    let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
+    let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_lineworld.iter().sum::<u128>() / durations_lineworld.len() as u128);
     println!("{}", output);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
+    ///////////
+
+    let mut durations_lineworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
+    let gamma = 0.99f32;
+    let epsilon = 0.10;
+    let alpha = 0.10;
+    let nb_iter = 1000;
+    let max_steps = 10;
+    for _ in 0..number_of_tests {
+        let mut lineworld = Env::LineWorld::LineWorld::init();
+        let now = time::Instant::now();
+        let res = lineworld.sarsa(gamma, epsilon, alpha, nb_iter, max_steps);
+        durations_lineworld.push(now.elapsed().as_millis());
+        lineworld.run_game_hashmap(res);
+        final_score.push(lineworld.score());
+    }
+    let output = format!("Average elapsed time over {} Sarsa (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_lineworld.iter().sum::<u128>() / durations_lineworld.len() as u128);
+    println!("{}", output);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
+
+
+
 
 
     //////// GridWorld
 
 
-    let mut gridworld = Env::GridWorld::GridWorld::init();
-    fs::create_dir("2024-07-23").unwrap();
     let file_path = PathBuf::from("./2024-07-23").join("GridWorld.txt");
     let mut file = OpenOptions::new()
         .write(true)
@@ -171,134 +236,201 @@ fn main() {
         .unwrap();
     writeln!(file, "GridWorld\n");
 
-    let mut durations_gridworld: Vec<u64> = Vec::new();
+    let mut durations_gridworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let theta = 0.1f32;
     let gamma = 0.99f32;
     for _ in 0..number_of_tests {
+        let mut gridworld = Env::GridWorld::GridWorld::init();
         let now = time::Instant::now();
-        let res = gridworld.policy_iteration(0.1f32, 0.99f32);
-        durations_gridworld.push(now.elapsed().as_secs());
+        let res = gridworld.policy_iteration(theta, gamma);
+        durations_gridworld.push(now.elapsed().as_millis());
         gridworld.run_game_vec(res);
-        gridworld.reset()
+        final_score.push(gridworld.score());
     }
-    let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_gridworld.iter().sum::<u64>() / durations_gridworld.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}ms", number_of_tests, theta, gamma, durations_gridworld.iter().sum::<u128>() / durations_gridworld.len() as u128);
+
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
+
+    //////
     
-    let mut durations_gridworld: Vec<u64> = Vec::new();
-    let theta = 0.1f32;
+    let mut durations_gridworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
+    let theta = 0.01f32;
     let gamma = 0.99f32;
     for _ in 0..number_of_tests {
+        let mut gridworld = Env::GridWorld::GridWorld::init();
         let now = time::Instant::now();
-        let res = gridworld.value_iteration(0.10f32, 0.99f32);
-        durations_gridworld.push(now.elapsed().as_secs());
+        let res = gridworld.value_iteration(theta, gamma);
+        durations_gridworld.push(now.elapsed().as_millis());
         gridworld.run_game_vec(res);
-        gridworld.reset()
+        final_score.push(gridworld.score());
     }
-    let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_gridworld.iter().sum::<u64>() / durations_gridworld.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}ms", number_of_tests, theta, gamma, durations_gridworld.iter().sum::<u128>() / durations_gridworld.len() as u128);
+
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
+
+    //////
     
-    let mut durations_gridworld: Vec<u64> = Vec::new();
+    let mut durations_gridworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
-    let nb_iter = 1000;
-    let max_steps = 10;
+    let nb_iter = 10000;
+    let max_steps = 1000;
     for _ in 0..number_of_tests {
+        let mut gridworld = Env::GridWorld::GridWorld::init();
         let now = time::Instant::now();
         let res = gridworld.monte_carlo_exploring_starts(gamma, nb_iter, max_steps);
-        durations_gridworld.push(now.elapsed().as_secs());
+        durations_gridworld.push(now.elapsed().as_millis());
         gridworld.run_game_hashmap(res);
-        gridworld.reset()
+        final_score.push(gridworld.score());
     }
-    let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, nb_iter, max_steps, durations_gridworld.iter().sum::<u64>() / durations_gridworld.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, nb_iter, max_steps, durations_gridworld.iter().sum::<u128>() / durations_gridworld.len() as u128);
+
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
+
+    /////
     
-    let mut durations_gridworld: Vec<u64> = Vec::new();
+    let mut durations_gridworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 1000;
-    let max_steps = 10;
+    let nb_iter = 10000;
+    let max_steps = 1000;
     for _ in 0..number_of_tests {
+        let mut gridworld = Env::GridWorld::GridWorld::init();
         let now = time::Instant::now();
         let res = gridworld.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
-        durations_gridworld.push(now.elapsed().as_secs());
+        durations_gridworld.push(now.elapsed().as_millis());
         gridworld.run_game_random_hashmap(res);
-        gridworld.reset()
+        final_score.push(gridworld.score());
     }
-    let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_gridworld.iter().sum::<u64>() / durations_gridworld.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_gridworld.iter().sum::<u128>() / durations_gridworld.len() as u128);
+
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
+
+    ////
     
-    let mut durations_gridworld: Vec<u64> = Vec::new();
+    let mut durations_gridworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 1000;
-    let max_steps = 10;
+    let nb_iter = 10000;
+    let max_steps = 1000;
     for _ in 0..number_of_tests {
+        let mut gridworld = Env::GridWorld::GridWorld::init();
         let now = time::Instant::now();
         let res = gridworld.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
-        durations_gridworld.push(now.elapsed().as_secs());
+        durations_gridworld.push(now.elapsed().as_millis());
         gridworld.run_game_hashmap(res);
-        gridworld.reset()
+        final_score.push(gridworld.score());
     }
-    let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_gridworld.iter().sum::<u64>() / durations_gridworld.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_gridworld.iter().sum::<u128>() / durations_gridworld.len() as u128);
+
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
+    ///////
     
-    let mut durations_gridworld: Vec<u64> = Vec::new();
+    let mut durations_gridworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let alpha = 0.10;
-    let nb_iter = 1000;
-    let max_steps = 10;
+    let nb_iter = 10000;
+    let max_steps = 1000;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
+        let mut gridworld = Env::GridWorld::GridWorld::init();
         let res = gridworld.Q_learning_off_policy(gamma, epsilon, alpha, nb_iter, max_steps);
-        durations_gridworld.push(now.elapsed().as_secs());
+        durations_gridworld.push(now.elapsed().as_millis());
         gridworld.run_game_hashmap(res);
-        gridworld.reset()
+        final_score.push(gridworld.score());
     }
-    let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_gridworld.iter().sum::<u64>() / durations_gridworld.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_gridworld.iter().sum::<u128>() / durations_gridworld.len() as u128);
+
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
-    
-    
+    writeln!(file, "{}", output_score);
+
+    ///////
+
+    let mut durations_gridworld: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
+    let gamma = 0.99f32;
+    let epsilon = 0.10;
+    let alpha = 0.10;
+    let nb_iter = 10000;
+    let max_steps = 1000;
+    for _ in 0..number_of_tests {
+        let now = time::Instant::now();
+        let mut gridworld = Env::GridWorld::GridWorld::init();
+        let res = gridworld.sarsa(gamma, epsilon, alpha, nb_iter, max_steps);
+        durations_gridworld.push(now.elapsed().as_millis());
+        gridworld.run_game_hashmap(res);
+        final_score.push(gridworld.score());
+    }
+    let output = format!("Average elapsed time over {} sarsa (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_gridworld.iter().sum::<u128>() / durations_gridworld.len() as u128);
+
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
+
+
+
     //////// Shifumi
     
-    
-    let mut shifumi = Env::Shifumi::Shifumi::init();
-    fs::create_dir("2024-07-23").unwrap();
+
     let file_path = PathBuf::from("./2024-07-23").join("Shifumi.txt");
     let mut file = OpenOptions::new()
         .write(true)
@@ -307,134 +439,193 @@ fn main() {
         .unwrap();
     writeln!(file, "Shifumi\n");
 
-    let mut durations_shifumi: Vec<u64> = Vec::new();
+    let mut durations_shifumi: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let theta = 0.1f32;
     let gamma = 0.99f32;
     for _ in 0..number_of_tests {
+        let mut shifumi = Env::Shifumi::Shifumi::init();
         let now = time::Instant::now();
-        let res = shifumi.policy_iteration(0.1f32, 0.99f32);
-        durations_shifumi.push(now.elapsed().as_secs());
+        let res = shifumi.policy_iteration(theta, gamma);
+        durations_shifumi.push(now.elapsed().as_millis());
         shifumi.run_game_vec(res);
-        shifumi.reset()
+        final_score.push(shifumi.score() as f32);
     }
-    let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_shifumi.iter().sum::<u64>() / durations_shifumi.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}ms", number_of_tests, theta, gamma, durations_shifumi.iter().sum::<u128>() / durations_shifumi.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
-    let mut durations_shifumi: Vec<u64> = Vec::new();
-    let theta = 0.1f32;
+    ////
+
+    let mut durations_shifumi: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
+    let theta = 0.01f32;
     let gamma = 0.99f32;
     for _ in 0..number_of_tests {
+        let mut shifumi = Env::Shifumi::Shifumi::init();
         let now = time::Instant::now();
-        let res = shifumi.value_iteration(0.10f32, 0.99f32);
-        durations_shifumi.push(now.elapsed().as_secs());
+        let res = shifumi.value_iteration(theta, gamma);
+        durations_shifumi.push(now.elapsed().as_millis());
         shifumi.run_game_vec(res);
-        shifumi.reset()
+        final_score.push(shifumi.score() as f32);
     }
-    let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_shifumi.iter().sum::<u64>() / durations_shifumi.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}ms", number_of_tests, theta, gamma, durations_shifumi.iter().sum::<u128>() / durations_shifumi.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
-    let mut durations_shifumi: Vec<u64> = Vec::new();
+    ////
+
+    let mut durations_shifumi: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let nb_iter = 1000;
     let max_steps = 10;
     for _ in 0..number_of_tests {
+        let mut shifumi = Env::Shifumi::Shifumi::init();
         let now = time::Instant::now();
         let res = shifumi.monte_carlo_exploring_starts(gamma, nb_iter, max_steps);
-        durations_shifumi.push(now.elapsed().as_secs());
+        durations_shifumi.push(now.elapsed().as_millis());
         shifumi.run_game_hashmap(res);
-        shifumi.reset()
+        final_score.push(shifumi.score() as f32);
     }
-    let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, nb_iter, max_steps, durations_shifumi.iter().sum::<u64>() / durations_shifumi.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, nb_iter, max_steps, durations_shifumi.iter().sum::<u128>() / durations_shifumi.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
+    /////////
 
-    let mut durations_shifumi: Vec<u64> = Vec::new();
+    let mut durations_shifumi: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let nb_iter = 1000;
     let max_steps = 10;
     for _ in 0..number_of_tests {
+        let mut shifumi = Env::Shifumi::Shifumi::init();
         let now = time::Instant::now();
         let res = shifumi.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
-        durations_shifumi.push(now.elapsed().as_secs());
+        durations_shifumi.push(now.elapsed().as_millis());
         shifumi.run_game_random_hashmap(res);
-        shifumi.reset()
+        final_score.push(shifumi.score() as f32);
     }
-    let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_shifumi.iter().sum::<u64>() / durations_shifumi.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_shifumi.iter().sum::<u128>() / durations_shifumi.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
-    let mut durations_shifumi: Vec<u64> = Vec::new();
+    //////////
+
+    let mut durations_shifumi: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let nb_iter = 1000;
     let max_steps = 10;
     for _ in 0..number_of_tests {
+        let mut shifumi = Env::Shifumi::Shifumi::init();
         let now = time::Instant::now();
         let res = shifumi.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
-        durations_shifumi.push(now.elapsed().as_secs());
+        durations_shifumi.push(now.elapsed().as_millis());
         shifumi.run_game_hashmap(res);
-        shifumi.reset()
+        final_score.push(shifumi.score() as f32);
     }
-    let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_shifumi.iter().sum::<u64>() / durations_shifumi.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_shifumi.iter().sum::<u128>() / durations_shifumi.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
+    //////
 
-    let mut durations_shifumi: Vec<u64> = Vec::new();
+    let mut durations_shifumi: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let alpha = 0.10;
     let nb_iter = 1000;
     let max_steps = 10;
     for _ in 0..number_of_tests {
+        let mut shifumi = Env::Shifumi::Shifumi::init();
         let now = time::Instant::now();
         let res = shifumi.Q_learning_off_policy(gamma, epsilon, alpha, nb_iter, max_steps);
-        durations_shifumi.push(now.elapsed().as_secs());
+        durations_shifumi.push(now.elapsed().as_millis());
         shifumi.run_game_hashmap(res);
-        shifumi.reset()
+        final_score.push(shifumi.score() as f32);
     }
-    let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_shifumi.iter().sum::<u64>() / durations_shifumi.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_shifumi.iter().sum::<u128>() / durations_shifumi.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
+
+    //////
+
+    let mut durations_shifumi: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
+    let gamma = 0.99f32;
+    let epsilon = 0.10;
+    let alpha = 0.10;
+    let nb_iter = 1000;
+    let max_steps = 10;
+    for _ in 0..number_of_tests {
+        let mut shifumi = Env::Shifumi::Shifumi::init();
+        let now = time::Instant::now();
+        let res = shifumi.sarsa(gamma, epsilon, alpha, nb_iter, max_steps);
+        durations_shifumi.push(now.elapsed().as_millis());
+        shifumi.run_game_hashmap(res);
+        final_score.push(shifumi.score() as f32);
+    }
+    let output = format!("Average elapsed time over {} sarsa (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_shifumi.iter().sum::<u128>() / durations_shifumi.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
 
+     */
     //////// MontyHall
     
 
-    let mut montyhall = Env::MontyHall::MontyHall::init();
-    fs::create_dir("2024-07-23").unwrap();
     let file_path = PathBuf::from("./2024-07-23").join("MontyHall.txt");
     let mut file = OpenOptions::new()
         .write(true)
@@ -443,128 +634,191 @@ fn main() {
         .unwrap();
     writeln!(file, "MontyHall\n");
 
-    let mut durations_montyhall: Vec<u64> = Vec::new();
+    let mut durations_montyhall: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let theta = 0.1f32;
     let gamma = 0.99f32;
     for _ in 0..number_of_tests {
+        let mut montyhall = Env::MontyHall::MontyHall::init();
         let now = time::Instant::now();
-        let res = montyhall.policy_iteration(0.1f32, 0.99f32);
-        durations_montyhall.push(now.elapsed().as_secs());
+        let res = montyhall.policy_iteration(theta, gamma);
+        durations_montyhall.push(now.elapsed().as_millis());
         montyhall.run_game_vec(res);
-        montyhall.reset()
+        final_score.push(montyhall.score() as f32);
     }
-    let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_montyhall.iter().sum::<u64>() / durations_montyhall.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}ms", number_of_tests, theta, gamma, durations_montyhall.iter().sum::<u128>() / durations_montyhall.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
-    let mut durations_montyhall: Vec<u64> = Vec::new();
-    let theta = 0.1f32;
+    /////
+
+    let mut durations_montyhall: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
+    let theta = 0.01f32;
     let gamma = 0.99f32;
     for _ in 0..number_of_tests {
+        let mut montyhall = Env::MontyHall::MontyHall::init();
         let now = time::Instant::now();
-        let res = montyhall.value_iteration(0.10f32, 0.99f32);
-        durations_montyhall.push(now.elapsed().as_secs());
+        let res = montyhall.value_iteration(theta, gamma);
+        durations_montyhall.push(now.elapsed().as_millis());
         montyhall.run_game_vec(res);
-        montyhall.reset()
+        final_score.push(montyhall.score() as f32);
     }
-    let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_montyhall.iter().sum::<u64>() / durations_montyhall.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}ms", number_of_tests, theta, gamma, durations_montyhall.iter().sum::<u128>() / durations_montyhall.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
-    let mut durations_montyhall: Vec<u64> = Vec::new();
+    /////
+
+    let mut durations_montyhall: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let nb_iter = 1000;
     let max_steps = 10;
     for _ in 0..number_of_tests {
+        let mut montyhall = Env::MontyHall::MontyHall::init();
         let now = time::Instant::now();
         let res = montyhall.monte_carlo_exploring_starts(gamma, nb_iter, max_steps);
-        durations_montyhall.push(now.elapsed().as_secs());
+        durations_montyhall.push(now.elapsed().as_millis());
         montyhall.run_game_hashmap(res);
-        montyhall.reset()
+        final_score.push(montyhall.score() as f32);
     }
-    let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, nb_iter, max_steps, durations_montyhall.iter().sum::<u64>() / durations_montyhall.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, nb_iter, max_steps, durations_montyhall.iter().sum::<u128>() / durations_montyhall.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
-    let mut durations_montyhall: Vec<u64> = Vec::new();
-    let gamma = 0.99f32;
-    let epsilon = 0.10;
-    let nb_iter = 1000;
-    let max_steps = 10;
-    for _ in 0..number_of_tests {
-        let now = time::Instant::now();
-        let res = montyhall.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
-        durations_montyhall.push(now.elapsed().as_secs());
-        montyhall.run_game_random_hashmap(res);
-        montyhall.reset()
-    }
-    let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_montyhall.iter().sum::<u64>() / durations_montyhall.len() as u64);
-    println!("{}", output);
-    let mut file = OpenOptions::new()
-        .write(true)
-        .append(true)
-        .open(&file_path)
-        .unwrap();
-    writeln!(file, "{}", output);
+    /////
 
-    let mut durations_montyhall: Vec<u64> = Vec::new();
-    let gamma = 0.99f32;
-    let epsilon = 0.10;
-    let nb_iter = 1000;
-    let max_steps = 10;
-    for _ in 0..number_of_tests {
-        let now = time::Instant::now();
-        let res = montyhall.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
-        durations_montyhall.push(now.elapsed().as_secs());
-        montyhall.run_game_hashmap(res);
-        montyhall.reset()
-    }
-    let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_montyhall.iter().sum::<u64>() / durations_montyhall.len() as u64);
-    println!("{}", output);
-    let mut file = OpenOptions::new()
-        .write(true)
-        .append(true)
-        .open(&file_path)
-        .unwrap();
-    writeln!(file, "{}", output);
+    // let mut durations_montyhall: Vec<u128> = Vec::new();
+    // let mut final_score: Vec<f32> = Vec::new();
+    // let gamma = 0.99f32;
+    // let epsilon = 0.10;
+    // let nb_iter = 1000;
+    // let max_steps = 10;
+    // for _ in 0..number_of_tests {
+    //     let mut montyhall = Env::MontyHall::MontyHall::init();
+    //     let now = time::Instant::now();
+    //     let res = montyhall.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
+    //     durations_montyhall.push(now.elapsed().as_millis());
+    //     montyhall.run_game_random_hashmap(res);
+    //     final_score.push(montyhall.score() as f32);
+    // }
+    // let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_montyhall.iter().sum::<u128>() / durations_montyhall.len() as u128);
+    // let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    // let output_score = format!("Score moyen= {}", average_score);
+    // let mut file = OpenOptions::new()
+    //     .write(true)
+    //     .append(true)
+    //     .open(&file_path)
+    //     .unwrap();
+    // writeln!(file, "{}", output);
+    // writeln!(file, "{}", output_score);
 
-    let mut durations_montyhall: Vec<u64> = Vec::new();
+    //////
+
+    // let mut durations_montyhall: Vec<u128> = Vec::new();
+    // let mut final_score: Vec<f32> = Vec::new();
+    // let gamma = 0.99f32;
+    // let epsilon = 0.10;
+    // let nb_iter = 1000;
+    // let max_steps = 10;
+    // for _ in 0..number_of_tests {
+    //     let mut montyhall = Env::MontyHall::MontyHall::init();
+    //     let now = time::Instant::now();
+    //     let res = montyhall.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
+    //     durations_montyhall.push(now.elapsed().as_millis());
+    //     montyhall.run_game_hashmap(res);
+    //     final_score.push(montyhall.score() as f32);
+    // }
+    // let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_montyhall.iter().sum::<u128>() / durations_montyhall.len() as u128);
+    // let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    // let output_score = format!("Score moyen= {}", average_score);
+    // let mut file = OpenOptions::new()
+    //     .write(true)
+    //     .append(true)
+    //     .open(&file_path)
+    //     .unwrap();
+    // writeln!(file, "{}", output);
+    // writeln!(file, "{}", output_score);
+
+    /////
+
+    let mut durations_montyhall: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let alpha = 0.10;
     let nb_iter = 1000;
     let max_steps = 10;
     for _ in 0..number_of_tests {
+        let mut montyhall = Env::MontyHall::MontyHall::init();
         let now = time::Instant::now();
         let res = montyhall.Q_learning_off_policy(gamma, epsilon, alpha, nb_iter, max_steps);
-        durations_montyhall.push(now.elapsed().as_secs());
+        durations_montyhall.push(now.elapsed().as_millis());
         montyhall.run_game_hashmap(res);
-        montyhall.reset()
+        final_score.push(montyhall.score() as f32);
     }
-    let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_montyhall.iter().sum::<u64>() / durations_montyhall.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_montyhall.iter().sum::<u128>() / durations_montyhall.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
+    /////
+
+    let mut durations_montyhall: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
+    let gamma = 0.99f32;
+    let epsilon = 0.10;
+    let alpha = 0.10;
+    let nb_iter = 1000;
+    let max_steps = 10;
+    for _ in 0..number_of_tests {
+        let mut montyhall = Env::MontyHall::MontyHall::init();
+        let now = time::Instant::now();
+        let res = montyhall.sarsa(gamma, epsilon, alpha, nb_iter, max_steps);
+        durations_montyhall.push(now.elapsed().as_millis());
+        montyhall.run_game_hashmap(res);
+        final_score.push(montyhall.score() as f32);
+    }
+    let output = format!("Average elapsed time over {} sarsa (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_montyhall.iter().sum::<u128>() / durations_montyhall.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
+
+    /*
 
     //////// SecretEnv0
 
@@ -1108,5 +1362,7 @@ fn main() {
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+
+     */
 
 }
