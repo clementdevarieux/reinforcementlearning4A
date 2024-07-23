@@ -771,6 +771,7 @@ impl SecretEnv0 {
                 }
 
                 let updated_gain = (1.00 - alpha) * Q.get(&(s, a)).unwrap() + alpha * target;
+                // let updated_gain = (1.00 - alpha) * Q.get(&(s, a)).unwrap() + alpha * target;
                 Q.insert((s, a), updated_gain);
 
                 steps_count += 1;

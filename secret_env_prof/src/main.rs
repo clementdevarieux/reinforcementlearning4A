@@ -4,18 +4,18 @@ use libloading::{Library, Symbol};
 fn main() {
     unsafe {
         #[cfg(target_os = "linux")]
-            let path = "./libs/libsecret_envs.so";
+            let path = "../libs/libsecret_envs.so";
         #[cfg(all(target_os = "macos", target_arch = "x86_64"))]
-            let path = "./libs/libsecret_envs_intel_macos.dylib";
+            let path = "../libs/libsecret_envs_intel_macos.dylib";
         #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-            let path = "./libs/libsecret_envs.dylib";
+            let path = "../libs/libsecret_envs.dylib";
         #[cfg(windows)]
-            let path = "./libs/secret_envs.dll";
+            let path = "../libs/secret_envs.dll";
         let lib = libloading::Library::new(path).expect("Failed to load library");
 
         println!("Secret env 0 functions available for Dynamic Programming ------------------------------------------------------");
 
-        let secret_env_0_num_states: libloading::Symbol<unsafe extern fn() -> usize> =
+        let secret_env_1_num_states: libloading::Symbol<unsafe extern fn() -> usize> =
             lib.get(b"secret_env_0_num_states").expect("Failed to load function `secret_env_0_num_states`");
         dbg!(secret_env_0_num_states());
 
