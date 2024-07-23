@@ -12,6 +12,9 @@ use rand::seq::SliceRandom;
 use std::collections::HashMap;
 use colored::*;
 use crate::secret_env::lib_secret_env::LIB;
+use std::time;
+use std::fs;
+use std::path::PathBuf;
 
 fn main() {
 
@@ -57,7 +60,7 @@ fn main() {
     // // let res = secret0.monte_carlo_off_policy(0.99999f32,0.5, 1000, 10000);
     // let res = secret1.monte_carlo_off_policy(0.99f32,0.20, 1000000, 10000);
     // println!("{:?}", res);
-    //
+    
     // secret1.run_game_hashmap(res);
 
 
@@ -69,14 +72,91 @@ fn main() {
     //
     // secret0.run_game_hashmap(res);
 
-    // let mut lineworld = Env::LineWorld::LineWorld::init();
-    // //
-    // for _ in 0..1 {
-    //     let res = lineworld.Q_learning_off_policy(0.99f32,0.10, 0.10, 1000, 10);
-    //     lineworld.run_game_hashmap(res);
-    //     // println!("{:?}", res);
-    // }
-    // //
+
+    //////// GridWorld
+
+
+    let mut lineworld = Env::LineWorld::LineWorld::init();
+    fs::create_dir("2024-07-23").unwrap();
+    let file_path = PathBuf::from("./2024-07-23").join("LineWorld.txt");
+    fs::write(&file_path, "LineWorld\n");
+    let mut durations_lineworld: Vec<u64> = Vec::new();
+    for _ in 0..5 {
+        let now = time::Instant::now();
+        let res = lineworld.policy_iteration(0.1f32, 0.99f32);
+        durations_lineworld.push(now.elapsed().as_secs());
+        lineworld.run_game_vec(res);
+        lineworld.reset()
+    }
+    let output = format!("Average elapsed time over 5 policy_iteration: {}", durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
+    println!("{}", output);
+    fs::write(&file_path, "output");
+
+    let mut durations_lineworld: Vec<u64> = Vec::new();
+    for _ in 0..5 {
+        let now = time::Instant::now();
+        let res = lineworld.value_iteration(0.10f32, 0.99f32);
+        durations_lineworld.push(now.elapsed().as_secs());
+        lineworld.run_game_vec(res);
+        lineworld.reset()
+    }
+    let output = format!("Average elapsed time over 5 value_iteration: {}", durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
+    println!("{}", output);
+    fs::write(&file_path, "output");
+
+    let mut durations_lineworld: Vec<u64> = Vec::new();
+    for _ in 0..5 {
+        let now = time::Instant::now();
+        let res = lineworld.monte_carlo_exploring_starts(0.99f32, 1000, 10);
+        durations_lineworld.push(now.elapsed().as_secs());
+        lineworld.run_game_hashmap(res);
+        lineworld.reset()
+    }
+    let output = format!("Average elapsed time over 5 monte_carlo_exploring_starts: {}", durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
+    println!("{}", output);
+    fs::write(&file_path, "output");
+
+    let mut durations_lineworld: Vec<u64> = Vec::new();
+    for _ in 0..5 {
+        let now = time::Instant::now();
+        let res = lineworld.monte_carlo_fv_on_policy(0.99f32,0.10, 1000, 10);
+        durations_lineworld.push(now.elapsed().as_secs());
+        lineworld.run_game_random_hashmap(res);
+        lineworld.reset()
+    }
+    let output = format!("Average elapsed time over 5 monte_carlo_fv_on_policy: {}", durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
+    println!("{}", output);
+    fs::write(&file_path, "output");
+
+    let mut durations_lineworld: Vec<u64> = Vec::new();
+    for _ in 0..5 {
+        let now = time::Instant::now();
+        let res = lineworld.monte_carlo_off_policy(0.99f32,0.10, 1000, 10);
+        durations_lineworld.push(now.elapsed().as_secs());
+        lineworld.run_game_hashmap(res);
+        lineworld.reset()
+    }
+    let output = format!("Average elapsed time over 5 monte_carlo_off_policy: {}", durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
+    println!("{}", output);
+    fs::write(&file_path, "output");
+
+    let mut durations_lineworld: Vec<u64> = Vec::new();
+    for _ in 0..5 {
+        let now = time::Instant::now();
+        let res = lineworld.Q_learning_off_policy(0.99f32,0.10, 0.10, 1000, 10);
+        durations_lineworld.push(now.elapsed().as_secs());
+        lineworld.run_game_hashmap(res);
+        lineworld.reset()
+    }
+    let output = format!("Average elapsed time over 5 Q_learning_off_policy: {}", durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
+    println!("{}", output);
+    fs::write(&file_path, "output");
+
+
+    //////// GridWorld
+
+
+    //
     // let mut grid = Env::GridWorld::GridWorld::init();
     //
     // for _ in 0..1 {
@@ -105,5 +185,8 @@ fn main() {
     //     monty.run_game_hashmap(res);
     //     monty.reset();
     // }
+
+
+
 
 }
