@@ -798,13 +798,15 @@ impl MontyHall {
             let mut b: HashMap<i32, HashMap<i32, f32>> = HashMap::new();
 
             for s in 0..self.num_states {
+                self.agent_pos = s;
                 let random_Vec = self.generate_random_probabilities();
                 let mut prob_per_action: HashMap<i32, f32> = HashMap::new();
-                for a in 0..self.num_actions {
+                for a in 0..self.available_actions().len() {
                     prob_per_action.insert(a as i32, random_Vec[a as usize]);
                 }
                 b.insert(s, prob_per_action);
             }
+            self.reset();
 
             for (state, action) in &Pi {
                 if let Some(actions) = b.get_mut(state) {
@@ -869,6 +871,7 @@ impl MontyHall {
                 }
             }
         }
+
         Pi
     }
 
