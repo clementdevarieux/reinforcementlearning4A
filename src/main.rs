@@ -14,6 +14,8 @@ use colored::*;
 use crate::secret_env::lib_secret_env::LIB;
 use std::time;
 use std::fs;
+use std::fs::OpenOptions;
+use std::io::prelude::*;
 use std::path::PathBuf;
 
 fn main() {
@@ -26,7 +28,12 @@ fn main() {
     let mut lineworld = Env::LineWorld::LineWorld::init();
     fs::create_dir("2024-07-23").unwrap();
     let file_path = PathBuf::from("./2024-07-23").join("LineWorld.txt");
-    fs::write(&file_path, "LineWorld\n");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "LineWorld\n");
 
     let mut durations_lineworld: Vec<u64> = Vec::new();
     let theta = 0.1f32;
@@ -40,7 +47,12 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_lineworld: Vec<u64> = Vec::new();
     let theta = 0.1f32;
@@ -54,12 +66,17 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_lineworld: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = lineworld.monte_carlo_exploring_starts(gamma, nb_iter, max_steps);
@@ -69,13 +86,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, nb_iter, max_steps, durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_lineworld: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = lineworld.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
@@ -85,13 +107,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_lineworld: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = lineworld.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
@@ -101,14 +128,19 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_lineworld: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let alpha = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = lineworld.Q_learning_off_policy(gamma, epsilon, alpha, nb_iter, max_steps);
@@ -118,7 +150,12 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_lineworld.iter().sum::<u64>() / durations_lineworld.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
 
     //////// GridWorld
@@ -127,7 +164,12 @@ fn main() {
     let mut gridworld = Env::GridWorld::GridWorld::init();
     fs::create_dir("2024-07-23").unwrap();
     let file_path = PathBuf::from("./2024-07-23").join("GridWorld.txt");
-    fs::write(&file_path, "GridWorld\n");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "GridWorld\n");
 
     let mut durations_gridworld: Vec<u64> = Vec::new();
     let theta = 0.1f32;
@@ -141,7 +183,12 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_gridworld.iter().sum::<u64>() / durations_gridworld.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
     
     let mut durations_gridworld: Vec<u64> = Vec::new();
     let theta = 0.1f32;
@@ -155,12 +202,17 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_gridworld.iter().sum::<u64>() / durations_gridworld.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
     
     let mut durations_gridworld: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = gridworld.monte_carlo_exploring_starts(gamma, nb_iter, max_steps);
@@ -170,13 +222,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, nb_iter, max_steps, durations_gridworld.iter().sum::<u64>() / durations_gridworld.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
     
     let mut durations_gridworld: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = gridworld.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
@@ -186,13 +243,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_gridworld.iter().sum::<u64>() / durations_gridworld.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
     
     let mut durations_gridworld: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = gridworld.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
@@ -202,14 +264,19 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_gridworld.iter().sum::<u64>() / durations_gridworld.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
     
     let mut durations_gridworld: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let alpha = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = gridworld.Q_learning_off_policy(gamma, epsilon, alpha, nb_iter, max_steps);
@@ -219,7 +286,12 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_gridworld.iter().sum::<u64>() / durations_gridworld.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
     
     
     //////// Shifumi
@@ -228,7 +300,12 @@ fn main() {
     let mut shifumi = Env::Shifumi::Shifumi::init();
     fs::create_dir("2024-07-23").unwrap();
     let file_path = PathBuf::from("./2024-07-23").join("Shifumi.txt");
-    fs::write(&file_path, "Shifumi\n");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "Shifumi\n");
 
     let mut durations_shifumi: Vec<u64> = Vec::new();
     let theta = 0.1f32;
@@ -242,7 +319,12 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_shifumi.iter().sum::<u64>() / durations_shifumi.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_shifumi: Vec<u64> = Vec::new();
     let theta = 0.1f32;
@@ -256,12 +338,17 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_shifumi.iter().sum::<u64>() / durations_shifumi.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_shifumi: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = shifumi.monte_carlo_exploring_starts(gamma, nb_iter, max_steps);
@@ -271,13 +358,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, nb_iter, max_steps, durations_shifumi.iter().sum::<u64>() / durations_shifumi.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_shifumi: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = shifumi.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
@@ -287,13 +379,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_shifumi.iter().sum::<u64>() / durations_shifumi.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_shifumi: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = shifumi.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
@@ -303,14 +400,19 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_shifumi.iter().sum::<u64>() / durations_shifumi.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_shifumi: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let alpha = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = shifumi.Q_learning_off_policy(gamma, epsilon, alpha, nb_iter, max_steps);
@@ -320,7 +422,12 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_shifumi.iter().sum::<u64>() / durations_shifumi.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
 
     //////// MontyHall
@@ -329,7 +436,12 @@ fn main() {
     let mut montyhall = Env::MontyHall::MontyHall::init();
     fs::create_dir("2024-07-23").unwrap();
     let file_path = PathBuf::from("./2024-07-23").join("MontyHall.txt");
-    fs::write(&file_path, "MontyHall\n");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "MontyHall\n");
 
     let mut durations_montyhall: Vec<u64> = Vec::new();
     let theta = 0.1f32;
@@ -343,7 +455,12 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_montyhall.iter().sum::<u64>() / durations_montyhall.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_montyhall: Vec<u64> = Vec::new();
     let theta = 0.1f32;
@@ -357,12 +474,17 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_montyhall.iter().sum::<u64>() / durations_montyhall.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_montyhall: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = montyhall.monte_carlo_exploring_starts(gamma, nb_iter, max_steps);
@@ -372,13 +494,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, nb_iter, max_steps, durations_montyhall.iter().sum::<u64>() / durations_montyhall.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_montyhall: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = montyhall.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
@@ -388,13 +515,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_montyhall.iter().sum::<u64>() / durations_montyhall.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_montyhall: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = montyhall.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
@@ -404,14 +536,19 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_montyhall.iter().sum::<u64>() / durations_montyhall.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_montyhall: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let alpha = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = montyhall.Q_learning_off_policy(gamma, epsilon, alpha, nb_iter, max_steps);
@@ -421,7 +558,12 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_montyhall.iter().sum::<u64>() / durations_montyhall.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
 
     //////// SecretEnv0
@@ -430,7 +572,12 @@ fn main() {
     let mut secretenv0 = Env::SecretEnv0::SecretEnv0::new();
     fs::create_dir("2024-07-23").unwrap();
     let file_path = PathBuf::from("./2024-07-23").join("SecretEnv0.txt");
-    fs::write(&file_path, "SecretEnv0\n");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "SecretEnv0\n");
 
     // let mut durations_secretenv0: Vec<u64> = Vec::new();
     // let theta = 0.1f32;
@@ -444,7 +591,12 @@ fn main() {
     // }
     // let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_secretenv0.iter().sum::<u64>() / durations_secretenv0.len() as u64);
     // println!("{}", output);
-    // fs::write(&file_path, "output");
+    // let mut file = OpenOptions::new()
+    //     .write(true)
+    //     .append(true)
+    //     .open(&file_path)
+    //     .unwrap();
+    // writeln!(file, "{}", output);
 
     // let mut durations_secretenv0: Vec<u64> = Vec::new();
     // let theta = 0.1f32;
@@ -458,12 +610,17 @@ fn main() {
     // }
     // let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_secretenv0.iter().sum::<u64>() / durations_secretenv0.len() as u64);
     // println!("{}", output);
-    // fs::write(&file_path, "output");
+    // let mut file = OpenOptions::new()
+    //     .write(true)
+    //     .append(true)
+    //     .open(&file_path)
+    //     .unwrap();
+    // writeln!(file, "{}", output);
 
     let mut durations_secretenv0: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv0.monte_carlo_exploring_starts(gamma, nb_iter, max_steps);
@@ -473,13 +630,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, nb_iter, max_steps, durations_secretenv0.iter().sum::<u64>() / durations_secretenv0.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_secretenv0: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv0.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
@@ -489,13 +651,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_secretenv0.iter().sum::<u64>() / durations_secretenv0.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_secretenv0: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv0.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
@@ -505,14 +672,19 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_secretenv0.iter().sum::<u64>() / durations_secretenv0.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_secretenv0: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let alpha = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv0.Q_learning_off_policy(gamma, epsilon, alpha, nb_iter, max_steps);
@@ -522,7 +694,12 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_secretenv0.iter().sum::<u64>() / durations_secretenv0.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
 
     //////// SecretEnv1
@@ -531,7 +708,12 @@ fn main() {
     let mut secretenv1 = Env::SecretEnv1::SecretEnv1::new();
     fs::create_dir("2024-07-23").unwrap();
     let file_path = PathBuf::from("./2024-07-23").join("SecretEnv31.txt");
-    fs::write(&file_path, "SecretEnv1\n");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "SecretEnv1\n");
 
     // let mut durations_secretenv1: Vec<u64> = Vec::new();
     // let theta = 0.1f32;
@@ -545,7 +727,12 @@ fn main() {
     // }
     // let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_secretenv1.iter().sum::<u64>() / durations_secretenv1.len() as u64);
     // println!("{}", output);
-    // fs::write(&file_path, "output");
+    // let mut file = OpenOptions::new()
+    //     .write(true)
+    //     .append(true)
+    //     .open(&file_path)
+    //     .unwrap();
+    // writeln!(file, "{}", output);
 
     // let mut durations_secretenv1: Vec<u64> = Vec::new();
     // let theta = 0.1f32;
@@ -559,12 +746,17 @@ fn main() {
     // }
     // let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_secretenv1.iter().sum::<u64>() / durations_secretenv1.len() as u64);
     // println!("{}", output);
-    // fs::write(&file_path, "output");
+    // let mut file = OpenOptions::new()
+    //     .write(true)
+    //     .append(true)
+    //     .open(&file_path)
+    //     .unwrap();
+    // writeln!(file, "{}", output);
 
     let mut durations_secretenv1: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv1.monte_carlo_exploring_starts(gamma, nb_iter, max_steps);
@@ -574,13 +766,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, nb_iter, max_steps, durations_secretenv1.iter().sum::<u64>() / durations_secretenv1.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_secretenv1: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv1.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
@@ -590,13 +787,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_secretenv1.iter().sum::<u64>() / durations_secretenv1.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_secretenv1: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv1.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
@@ -606,14 +808,19 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_secretenv1.iter().sum::<u64>() / durations_secretenv1.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_secretenv1: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let alpha = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv1.Q_learning_off_policy(gamma, epsilon, alpha, nb_iter, max_steps);
@@ -623,7 +830,12 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_secretenv1.iter().sum::<u64>() / durations_secretenv1.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
 
     //////// SeceretEnv2
@@ -632,7 +844,12 @@ fn main() {
     let mut secretenv2 = Env::SecretEnv2::SecretEnv2::new();
     fs::create_dir("2024-07-23").unwrap();
     let file_path = PathBuf::from("./2024-07-23").join("SecretEnv2.txt");
-    fs::write(&file_path, "SecretEnv2\n");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "SecretEnv2\n");
 
     // let mut durations_secretenv2: Vec<u64> = Vec::new();
     // let theta = 0.1f32;
@@ -646,7 +863,12 @@ fn main() {
     // }
     // let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_secretenv2.iter().sum::<u64>() / durations_secretenv2.len() as u64);
     // println!("{}", output);
-    // fs::write(&file_path, "output");
+    // let mut file = OpenOptions::new()
+    //     .write(true)
+    //     .append(true)
+    //     .open(&file_path)
+    //     .unwrap();
+    // writeln!(file, "{}", output);
 
     // let mut durations_secretenv2: Vec<u64> = Vec::new();
     // let theta = 0.1f32;
@@ -660,12 +882,17 @@ fn main() {
     // }
     // let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_secretenv2.iter().sum::<u64>() / durations_secretenv2.len() as u64);
     // println!("{}", output);
-    // fs::write(&file_path, "output");
+    // let mut file = OpenOptions::new()
+    //     .write(true)
+    //     .append(true)
+    //     .open(&file_path)
+    //     .unwrap();
+    // writeln!(file, "{}", output);
 
     let mut durations_secretenv2: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv2.monte_carlo_exploring_starts(gamma, nb_iter, max_steps);
@@ -675,13 +902,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, nb_iter, max_steps, durations_secretenv2.iter().sum::<u64>() / durations_secretenv2.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_secretenv2: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv2.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
@@ -691,13 +923,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_secretenv2.iter().sum::<u64>() / durations_secretenv2.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_secretenv2: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv2.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
@@ -707,14 +944,19 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_secretenv2.iter().sum::<u64>() / durations_secretenv2.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_secretenv2: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let alpha = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv2.Q_learning_off_policy(gamma, epsilon, alpha, nb_iter, max_steps);
@@ -724,7 +966,12 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_secretenv2.iter().sum::<u64>() / durations_secretenv2.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
 
     //////// SecretEnv3
@@ -733,7 +980,12 @@ fn main() {
     let mut secretenv3 = Env::SecretEnv3::SecretEnv3::new();
     fs::create_dir("2024-07-23").unwrap();
     let file_path = PathBuf::from("./2024-07-23").join("SecretEnv3.txt");
-    fs::write(&file_path, "SecretEnv3\n");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "SecretEnv3\n");
 
     // let mut durations_secretenv3: Vec<u64> = Vec::new();
     // let theta = 0.1f32;
@@ -747,7 +999,12 @@ fn main() {
     // }
     // let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_secretenv3.iter().sum::<u64>() / durations_secretenv3.len() as u64);
     // println!("{}", output);
-    // fs::write(&file_path, "output");
+    // let mut file = OpenOptions::new()
+    //     .write(true)
+    //     .append(true)
+    //     .open(&file_path)
+    //     .unwrap();
+    // writeln!(file, "{}", output);
 
     // let mut durations_secretenv3: Vec<u64> = Vec::new();
     // let theta = 0.1f32;
@@ -761,12 +1018,17 @@ fn main() {
     // }
     // let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_secretenv3.iter().sum::<u64>() / durations_secretenv3.len() as u64);
     // println!("{}", output);
-    // fs::write(&file_path, "output");
+    // let mut file = OpenOptions::new()
+    //     .write(true)
+    //     .append(true)
+    //     .open(&file_path)
+    //     .unwrap();
+    // writeln!(file, "{}", output);
 
     let mut durations_secretenv3: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv3.monte_carlo_exploring_starts(gamma, nb_iter, max_steps);
@@ -776,13 +1038,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, nb_iter, max_steps, durations_secretenv3.iter().sum::<u64>() / durations_secretenv3.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_secretenv3: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv3.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
@@ -792,13 +1059,18 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_secretenv3.iter().sum::<u64>() / durations_secretenv3.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_secretenv3: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv3.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
@@ -808,14 +1080,19 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_secretenv3.iter().sum::<u64>() / durations_secretenv3.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
     let mut durations_secretenv3: Vec<u64> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let alpha = 0.10;
-    let nb_iter = 0.99f32;
-    let max_steps = 0.99f32;
+    let nb_iter = 1000;
+    let max_steps = 10;
     for _ in 0..number_of_tests {
         let now = time::Instant::now();
         let res = secretenv3.Q_learning_off_policy(gamma, epsilon, alpha, nb_iter, max_steps);
@@ -825,6 +1102,11 @@ fn main() {
     }
     let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_secretenv3.iter().sum::<u64>() / durations_secretenv3.len() as u64);
     println!("{}", output);
-    fs::write(&file_path, "output");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(&file_path)
+        .unwrap();
+    writeln!(file, "{}", output);
 
 }
