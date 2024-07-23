@@ -830,9 +830,9 @@ impl LineWorld {
             }
 
             while steps_count < max_steps && !self.is_game_over() {
-                println!("self pos = {}", self.agent_pos);
-                println!("a = {}", a);
-                println!("actual score = {:?}", Q.get(&(self.agent_pos, a)));
+                // println!("self pos = {}", self.agent_pos);
+                // println!("a = {}", a);
+                // println!("actual score = {:?}", Q.get(&(self.agent_pos, a)));
 
                 let s = self.agent_pos;
 
@@ -870,15 +870,15 @@ impl LineWorld {
                         }
                         a_p = best_a_p.unwrap();
                     }
-                    println!("self pos_p = {}", self.agent_pos);
-                    println!("a_p = {}", a_p);
+                    // println!("self pos_p = {}", self.agent_pos);
+                    // println!("a_p = {}", a_p);
                     target = r + gamma * Q.get(&(s_p, a_p)).unwrap();
                 }
 
-                let updated_gain = (1.00 - alpha) * Q.get(&(s, a)).unwrap() + alpha * (target - Q.get(&(s, a)).unwrap());
-                println!("updated gain = {}", updated_gain);
+                let updated_gain = (1.00 - alpha) * Q.get(&(s, a)).unwrap() + alpha * target;
+                // println!("updated gain = {}", updated_gain);
                 Q.insert((s, a), updated_gain);
-                println!("Upadted Q = {:?}", Q);
+                // println!("Upadted Q = {:?}", Q);
                 steps_count += 1;
 
                 a = a_p
@@ -908,17 +908,10 @@ impl LineWorld {
                     best_a_score = Q.get(&(*s, *action)).cloned();
                 }
             }
-            println!("Q = {:?}", Q);
+            // println!("Q = {:?}", Q);
 
             Pi.insert(*s, best_a.unwrap());
         }
         Pi
     }
-
-
-    Q = [[]]
-
-    s -> actions available
-
-    check si s est dans ton Q
 }

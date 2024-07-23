@@ -65,7 +65,6 @@ fn main() {
 
 
     // let mut secret0 = Env::SecretEnv0::SecretEnv0::new();
-<<<<<<< Updated upstream
     // // let policy = secret0.value_iteration(0.0001f32, 0.999f32);
     // // let res = secret0.monte_carlo_off_policy(0.99999f32,0.5, 1000, 10000);
     // let res = secret0.Q_learning_off_policy(0.99f32,0.10, 0.10, 1000, 10000);
@@ -728,9 +727,6 @@ fn main() {
 //
 //     //
 //     // let mut grid = Env::GridWorld::GridWorld::init();
-// =======
-=======
->>>>>>> Stashed changes
     // // // let policy = secret0.value_iteration(0.0001f32, 0.999f32);
     // for _ in 0..10 {
     //     let res = secret0.Q_learning_off_policy(0.99999f32, 0.1, 0.1, 10000, 2500);
@@ -741,23 +737,18 @@ fn main() {
     //     secret0.run_game_hashmap(res);
     // }
     let mut lineworld = Env::LineWorld::LineWorld::init();
-<<<<<<< Updated upstream
     for _ in 0..1{
-        let res = lineworld.sarsa(0.99f32,0.2, 0.10, 10, 10);
+        let res = lineworld.sarsa(0.99f32,0.2, 0.20, 1000, 10);
         println!("{:?}", res);
         lineworld.run_game_hashmap(res);
         // println!("{:?}", res);
     }
+    // for _ in 0..10{
+    //     let res = lineworld.sarsa(0.99f32,0.2, 0.10, 1000, 10);
+    //     lineworld.run_game_hashmap(res);
+    //     // println!("{:?}", res);
+    // }
     //
-=======
-    //
-    for _ in 0..10{
-        let res = lineworld.sarsa(0.99f32,0.2, 0.10, 1000, 10);
-        lineworld.run_game_hashmap(res);
-        // println!("{:?}", res);
-    }
-    //
->>>>>>> Stashed changes
     // let mut grid = Env::GridWorld::GridWorld::init();
 
     // for _ in 0..10 {
