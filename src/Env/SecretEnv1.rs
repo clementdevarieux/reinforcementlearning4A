@@ -200,43 +200,48 @@ impl SecretEnv1 {
             let action = match Pi.get(&pos) {
                 Some(&action) => action,
                 None => {
-                    continue;
+                    println!("Action not found in Pi !!");
+                    break;
                 }
             };
             self.step(action);
             self.display();
         }
     }
+
 
     pub fn run_game_random_state_hashmap(&mut self, Pi: HashMap<i32, i32>) {
         self.from_random_state();
         while !self.is_game_over(){
             let pos :i32 = self.agent_pos();
-            println!("pos {}", pos);
-            println!("Pi.get {:?}", Pi.get(&pos));
             let action = match Pi.get(&pos) {
                 Some(&action) => action,
                 None => {
-                    continue;
+                    println!("Action not found in Pi !!");
+                    break;
                 }
             };
-            println!("action = {}", action);
             self.step(action);
             self.display();
         }
     }
 
+
     pub fn run_game_random_hashmap(&mut self, Pi: HashMap<i32, HashMap<i32, f32>>) {
         self.reset();
         while !self.is_game_over() {
             let pos: i32 = self.agent_pos();
-            if let p = Pi.get(&pos).unwrap() {
-                let action = self.select_action(&p);
-                self.step(action);
-                self.display();
-            } else {
-                continue;
-            }
+            let action;
+
+            match Pi.get(&pos) {
+                Some(p) => action = self.select_action(&p),
+                None => {
+                    println!("Action not found in Pi !!");
+                    break;
+                }
+            };
+            self.step(action);
+            self.display();
         }
     }
 

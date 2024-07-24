@@ -157,6 +157,21 @@ impl LineWorld {
         }
     }
 
+    pub fn run_game_random_state_hashmap(&mut self, Pi: HashMap<i32, i32>) {
+        self.from_random_state();
+        while !self.is_game_over(){
+            let pos :i32 = self.agent_pos;
+            let action = match Pi.get(&pos) {
+                Some(&action) => action,
+                None => {
+                    println!("Action not found in Pi !!");
+                    break;
+                }
+            };
+            self.step(action);
+            self.display();
+        }
+    }
     pub fn run_game_hashmap(&mut self, Pi: HashMap<i32, i32>) {
         println!("Etat initial :\n");
         self.reset();
@@ -398,7 +413,6 @@ impl LineWorld {
             while steps_count < max_steps && !self.is_game_over() {
                 let s = self.agent_pos;
                 let aa = self.available_actions();
-
                 if !Pi.contains_key(&s) {
                     let random_index = rng.gen_range(0..aa.len());
                     Pi.insert(s.clone(), aa[random_index]);
@@ -415,7 +429,9 @@ impl LineWorld {
                 let prev_score = self.score();
                 self.step(a);
                 let r = self.score() - prev_score;
-
+                if trajectory.contains(&(s, a, r, aa.clone())){
+                    break;
+                }
                 trajectory.push((s, a, r, aa));
                 steps_count += 1;
             }

@@ -289,6 +289,22 @@ impl GridWorld {
         }
     }
 
+    pub fn run_game_random_state_hashmap(&mut self, Pi: HashMap<i32, i32>) {
+        self.from_random_state();
+        while !self.is_game_over(){
+            let pos :i32 = self.agent_pos;
+            let action = match Pi.get(&pos) {
+                Some(&action) => action,
+                None => {
+                    println!("Action not found in Pi !!");
+                    break;
+                }
+            };
+            self.step(action);
+            self.display();
+        }
+    }
+
     pub fn run_game_hashmap(&mut self, Pi: HashMap<i32, i32>) {
         println!("Etat initial :\n");
         self.reset();
@@ -361,16 +377,6 @@ impl GridWorld {
                     let mut total: f32 = 0f32;
                     for s_p in 0..len_S {
                         for r in 0..self.R.len() {
-                            /*
-                            let mut p = 0.0f32;
-                            if !self.is_game_over() && (s_p == (s-1) || s_p == (s+1)){
-                                        self.step(Pi[s]);
-                                        if self.score() == r as f32 && self.agent_pos == s_p as i32 {
-                                            p = 1.0;
-                                }
-                            }
-
-                             */
 
                             total = total + self.p[s][Pi[s] as usize][s_p][r] * (self.R[r] as f32 + gamma * V[s_p]);
                         }
@@ -401,15 +407,6 @@ impl GridWorld {
                     // self.step(a);
                     for s_p in 0..self.num_states {
                         for r_index in 0..self.R.len() {
-                            /*
-                            if !self.is_game_over() && (s_p == (s-1) || s_p == (s+1)){
-                                self.step(Pi[s as usize]);
-                                if self.score() == r_index as f32 && self.agent_pos == s_p {
-                                    p = 1.0;
-                                }
-                            }
-
-                             */
                             total += self.p[s as usize][a as usize][s_p as usize][r_index] * (self.R[r_index] as f32 + gamma * V[s_p as usize])
                         }
                     }
@@ -546,6 +543,10 @@ impl GridWorld {
                 let prev_score = self.score();
                 self.step(a);
                 let r = self.score() - prev_score;
+
+                if trajectory.contains(&(s, a, r, aa.clone())){
+                    break;
+                }
 
                 trajectory.push((s, a, r as f32, aa));
                 steps_count += 1;
