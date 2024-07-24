@@ -16,11 +16,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c5cd50fc-e256-4444-a726-bc11d1a0c6e3" name="Changes" comment="grid world env python et affichage">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/reinforcementlearning4A.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/reinforcementlearning4A.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exemples_cours/[Exemple] Naive Monte Carlo ES on Line World.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/exemples_cours/[Exemple] Naive Monte Carlo ES on Line World.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Env/LineWorld.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Env/LineWorld.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -92,7 +88,6 @@
     <configuration name="Run" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="command" value="run --package reinforcementlearning4A --bin reinforcementlearning4A" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
-      <envs />
       <option name="emulateTerminal" value="false" />
       <option name="channel" value="DEFAULT" />
       <option name="requiredFeatures" value="true" />
@@ -100,6 +95,7 @@
       <option name="withSudo" value="false" />
       <option name="buildTarget" value="REMOTE" />
       <option name="backtrace" value="SHORT" />
+      <envs />
       <option name="isRedirectInput" value="false" />
       <option name="redirectInputPath" value="" />
       <method v="2">
