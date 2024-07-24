@@ -1,6 +1,6 @@
-#Reinforcement Learning
+# Reinforcement Learning
 
-##Contexte général
+## Contexte général
 
 Ce projet a pour objectif d'implémenter manuellement des algorithmes de Deep Reinforcement Learning dans des environnements à recréer nous même, ou encore des environnements secrets données. 
 Le but de ces environnements étants de tester ces algorithmes. 
@@ -26,7 +26,7 @@ Environnements implémentés :
 - Secret Env 1
 - Secret Env 2
 
-##Explication repo
+## Explication repo
 Tout le code est inclus dans src/
 
 Le dossier Env comporte l'entièreté des environnements développés, chaque environnement va avoir son propre algorithme.
@@ -57,7 +57,7 @@ cargo build --release
 Pour lancer :
 .\target\release\reinforcementlearning4A.exe
 
-##Participants
+## Participants
 Ce projet est développé et maintenu par :
 
 Gabriel Bonjour
