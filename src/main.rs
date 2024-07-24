@@ -622,7 +622,7 @@ fn main() {
     writeln!(file, "{}", output_score);
 
 
-     */
+
     //////// MontyHall
     
 
@@ -818,13 +818,11 @@ fn main() {
     writeln!(file, "{}", output);
     writeln!(file, "{}", output_score);
 
-    /*
+    */
 
     //////// SecretEnv0
 
 
-    let mut secretenv0 = Env::SecretEnv0::SecretEnv0::new();
-    fs::create_dir("2024-07-23").unwrap();
     let file_path = PathBuf::from("./2024-07-23").join("SecretEnv0.txt");
     let mut file = OpenOptions::new()
         .write(true)
@@ -833,129 +831,115 @@ fn main() {
         .unwrap();
     writeln!(file, "SecretEnv0\n");
 
-    // let mut durations_secretenv0: Vec<u64> = Vec::new();
-    // let theta = 0.1f32;
-    // let gamma = 0.99f32;
-    // for _ in 0..number_of_tests {
-    //     let now = time::Instant::now();
-    //     let res = secretenv0.policy_iteration(0.1f32, 0.99f32);
-    //     durations_secretenv0.push(now.elapsed().as_secs());
-    //     secretenv0.run_game_vec(res);
-    //     secretenv0.reset()
-    // }
-    // let output = format!("Average elapsed time over {} policy_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_secretenv0.iter().sum::<u64>() / durations_secretenv0.len() as u64);
-    // println!("{}", output);
-    // let mut file = OpenOptions::new()
-    //     .write(true)
-    //     .append(true)
-    //     .open(&file_path)
-    //     .unwrap();
-    // writeln!(file, "{}", output);
-
-    // let mut durations_secretenv0: Vec<u64> = Vec::new();
-    // let theta = 0.1f32;
-    // let gamma = 0.99f32;
-    // for _ in 0..number_of_tests {
-    //     let now = time::Instant::now();
-    //     let res = secretenv0.value_iteration(0.10f32, 0.99f32);
-    //     durations_secretenv0.push(now.elapsed().as_secs());
-    //     secretenv0.run_game_vec(res);
-    //     secretenv0.reset()
-    // }
-    // let output = format!("Average elapsed time over {} value_iteration (theta = {}, gammma = {}): {}", number_of_tests, theta, gamma, durations_secretenv0.iter().sum::<u64>() / durations_secretenv0.len() as u64);
-    // println!("{}", output);
-    // let mut file = OpenOptions::new()
-    //     .write(true)
-    //     .append(true)
-    //     .open(&file_path)
-    //     .unwrap();
-    // writeln!(file, "{}", output);
-
-    let mut durations_secretenv0: Vec<u64> = Vec::new();
+    let mut durations_secretenv0: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
-    let nb_iter = 1000;
-    let max_steps = 10;
+    let nb_iter = 10000;
+    let max_steps = 1000;
     for _ in 0..number_of_tests {
+        let mut secretenv0 = Env::SecretEnv0::SecretEnv0::new();
         let now = time::Instant::now();
         let res = secretenv0.monte_carlo_exploring_starts(gamma, nb_iter, max_steps);
-        durations_secretenv0.push(now.elapsed().as_secs());
+        durations_secretenv0.push(now.elapsed().as_millis());
         secretenv0.run_game_hashmap(res);
-        secretenv0.reset()
+        final_score.push(secretenv0.score());
     }
-    let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, nb_iter, max_steps, durations_secretenv0.iter().sum::<u64>() / durations_secretenv0.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} monte_carlo_exploring_starts (gammma = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, nb_iter, max_steps, durations_secretenv0.iter().sum::<u128>() / durations_secretenv0.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
-    let mut durations_secretenv0: Vec<u64> = Vec::new();
+    ///////
+
+    let mut durations_secretenv0: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 1000;
-    let max_steps = 10;
+    let nb_iter = 10000;
+    let max_steps = 1000;
     for _ in 0..number_of_tests {
+        let mut secretenv0 = Env::SecretEnv0::SecretEnv0::new();
         let now = time::Instant::now();
         let res = secretenv0.monte_carlo_fv_on_policy(gamma, epsilon, nb_iter, max_steps);
-        durations_secretenv0.push(now.elapsed().as_secs());
+        durations_secretenv0.push(now.elapsed().as_millis());
         secretenv0.run_game_random_hashmap(res);
-        secretenv0.reset()
+        final_score.push(secretenv0.score());
     }
-    let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_secretenv0.iter().sum::<u64>() / durations_secretenv0.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} monte_carlo_fv_on_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_secretenv0.iter().sum::<u128>() / durations_secretenv0.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
-    let mut durations_secretenv0: Vec<u64> = Vec::new();
+    //////
+
+    let mut durations_secretenv0: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
-    let nb_iter = 1000;
-    let max_steps = 10;
+    let nb_iter = 10000;
+    let max_steps = 1000;
     for _ in 0..number_of_tests {
+        let mut secretenv0 = Env::SecretEnv0::SecretEnv0::new();
         let now = time::Instant::now();
         let res = secretenv0.monte_carlo_off_policy(gamma, epsilon, nb_iter, max_steps);
-        durations_secretenv0.push(now.elapsed().as_secs());
+        durations_secretenv0.push(now.elapsed().as_millis());
         secretenv0.run_game_hashmap(res);
-        secretenv0.reset()
+        final_score.push(secretenv0.score());
     }
-    let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_secretenv0.iter().sum::<u64>() / durations_secretenv0.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} monte_carlo_off_policy (gammma = {}, epsilon = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, nb_iter, max_steps, durations_secretenv0.iter().sum::<u128>() / durations_secretenv0.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
-    let mut durations_secretenv0: Vec<u64> = Vec::new();
+    ///////
+
+    let mut durations_secretenv0: Vec<u128> = Vec::new();
+    let mut final_score: Vec<f32> = Vec::new();
     let gamma = 0.99f32;
     let epsilon = 0.10;
     let alpha = 0.10;
-    let nb_iter = 1000;
-    let max_steps = 10;
+    let nb_iter = 10000;
+    let max_steps = 1000;
     for _ in 0..number_of_tests {
+        let mut secretenv0 = Env::SecretEnv0::SecretEnv0::new();
         let now = time::Instant::now();
         let res = secretenv0.Q_learning_off_policy(gamma, epsilon, alpha, nb_iter, max_steps);
-        durations_secretenv0.push(now.elapsed().as_secs());
+        durations_secretenv0.push(now.elapsed().as_millis());
         secretenv0.run_game_hashmap(res);
-        secretenv0.reset()
+        final_score.push(secretenv0.score());
     }
-    let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_secretenv0.iter().sum::<u64>() / durations_secretenv0.len() as u64);
-    println!("{}", output);
+    let output = format!("Average elapsed time over {} Q_learning_off_policy (gammma = {}, epsilon = {}, alpha = {}, nb_iter = {}, max_steps = {}): {}ms", number_of_tests, gamma, epsilon, alpha, nb_iter, max_steps, durations_secretenv0.iter().sum::<u128>() / durations_secretenv0.len() as u128);
+    let average_score: f32 = final_score.iter().sum::<f32>() / final_score.len() as f32;
+    let output_score = format!("Score moyen= {}", average_score);
     let mut file = OpenOptions::new()
         .write(true)
         .append(true)
         .open(&file_path)
         .unwrap();
     writeln!(file, "{}", output);
+    writeln!(file, "{}", output_score);
 
 
+
+    /*
     //////// SecretEnv1
 
 
