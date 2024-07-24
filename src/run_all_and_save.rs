@@ -33,13 +33,13 @@ pub(crate) fn run_all_and_save() {
     let run_number = Uuid::new_v4();
     let date_now = Local::now();
     let run_date = date_now.format("%Y-%m-%d_%H-%M-%S").to_string();
-    let number_of_tests = 50;
+    let number_of_tests = 5;
     let gamma = 0.9999f32;
-    let epsilon = 0.10;
+    let epsilon = 0.20;
     let alpha = 0.10;
-    let nb_iter = 10000;
-    let max_steps = 100000;
-    let theta = 0.1f32;
+    let nb_iter = 5000;
+    let max_steps = 50000;
+    let theta = 0.20f32;
 
     //////// LineWorld
 
@@ -474,7 +474,7 @@ pub(crate) fn run_all_and_save() {
     for i in 0..number_of_tests {
         let mut gridworld = Env::GridWorld::GridWorld::init();
         let now = time::Instant::now();
-        let res = gridworld.value_iteration(0.01, gamma);
+        let res = gridworld.value_iteration(0.0001, gamma);
         durations_gridworld.push(now.elapsed().as_millis());
         gridworld.run_game_vec(res.clone());
         final_score.push(gridworld.score());
