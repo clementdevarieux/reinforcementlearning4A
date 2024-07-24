@@ -121,6 +121,12 @@ fn main() {
     //permet de tout lancer d'un coup et save les resultats intermédiaires dans un fichier results/results.csv, dans le dossier "2024-07-23" et le dossier results/Pi_values
     //run_all_and_save::run_all_and_save();
 
+    //// Pour Init et lancer un algo sur un environnement spécifique
+    // let mut secretenv1 = Env::SecretEnv1::SecretEnv1::new();
+    // let res = secretenv1.monte_carlo_exploring_starts(0.9999, 1000, 50000);
+    // secretenv1.run_game_random_state_hashmap(res);
+
+
     let vector = get_vector("./results/Pi_values/6d9acd28-70a5-4bd0-a130-3fffbcac9173_2024-07-24_20-09-23_GridWorld_policy_iteration_2");
     let hashmap = get_hashmap("./results/Pi_values/6d9acd28-70a5-4bd0-a130-3fffbcac9173_2024-07-24_20-09-23_GridWorld_monte_carlo_off_policy_3");
     let random_hashmap = get_nested_hashmap("./results/Pi_values/6d9acd28-70a5-4bd0-a130-3fffbcac9173_2024-07-24_20-09-23_LineWorld_monte_carlo_fv_on_policy_3");
