@@ -261,12 +261,10 @@ impl SecretEnv1 {
 
         for _ in 0..len_S {
             let random_index = rng.gen_range(0..self.num_actions()) as usize;
-            Pi.push(self.A()[random_index]); // mettre des valeurs aléatoires de A
+            Pi.push(self.A()[random_index]);
         }
 
-        //self.update_p();
         loop {
-            // policy evaluation
             loop {
                 let mut delta: f32 = 0.0;
                 for s in 0..len_S {
@@ -331,19 +329,11 @@ impl SecretEnv1 {
     pub fn value_iteration(&mut self,
                            theta: f32,
                            gamma: f32) -> Vec<i32> {
-        // self.update_p();
 
         let len_S= self.num_states() as usize;
         let mut rng = rand::thread_rng();
         let mut V: Vec<f32> = Vec::with_capacity(len_S);
 
-        // for i in 0..len_S {
-        //     if self.T.contains(&(i as i32)) {
-        //         V.push(0f32);
-        //     } else {
-        //         V.push(rng.gen_range(0f32..1f32));
-        //     }
-        // }
         for _ in 0..len_S {
             V.push(rng.gen_range(0f32..1f32));
         }
@@ -456,8 +446,6 @@ impl SecretEnv1 {
             }
 
             if trajectory.is_empty() {
-                // println!("Trajectory is empty after max_steps: {}", max_steps);
-                // println!("Is game over: {}", self.is_game_over());
                 continue;
             }
 

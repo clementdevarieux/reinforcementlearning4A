@@ -260,7 +260,7 @@ impl SecretEnv0 {
 
         for _ in 0..len_S {
             let random_index = rng.gen_range(0..self.num_actions()) as usize;
-            Pi.push(self.A()[random_index]); // mettre des valeurs aléatoires de A
+            Pi.push(self.A()[random_index]);
         }
 
         //self.update_p();
@@ -455,8 +455,6 @@ impl SecretEnv0 {
             }
 
             if trajectory.is_empty() {
-                // println!("Trajectory is empty after max_steps: {}", max_steps);
-                // println!("Is game over: {}", self.is_game_over());
                 continue;
             }
 

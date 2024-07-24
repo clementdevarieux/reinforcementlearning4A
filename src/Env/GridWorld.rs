@@ -363,16 +363,14 @@ impl GridWorld {
 
         for _ in 0..len_S {
             let random_index = rng.gen_range(0..self.num_actions) as usize;
-            Pi.push(self.A[random_index]); // mettre des valeurs aléatoires de A
+            Pi.push(self.A[random_index]);
         }
 
         self.update_p();
         loop {
-            // policy evaluation
             loop {
                 let mut delta: f32 = 0.0;
                 for s in 0..len_S {
-                    // self.agent_pos = s as i32;
                     let mut v = V[s];
                     let mut total: f32 = 0f32;
                     for s_p in 0..len_S {
@@ -403,8 +401,6 @@ impl GridWorld {
 
                 for a in 0..self.num_actions {
                     let mut total: f32 = 0.0;
-                    // let mut p = 0.0f32;
-                    // self.step(a);
                     for s_p in 0..self.num_states {
                         for r_index in 0..self.R.len() {
                             total += self.p[s as usize][a as usize][s_p as usize][r_index] * (self.R[r_index] as f32 + gamma * V[s_p as usize])
@@ -624,8 +620,6 @@ impl GridWorld {
                 let s = self.agent_pos;
                 let aa = self.available_actions();
 
-                //println!("{:?}", aa);
-
                 if !Pi.contains_key(&s) {
                     let random_Vec = self.generate_random_probabilities();
                     let mut prob_per_action : HashMap<i32, f32> = HashMap::new();
@@ -634,8 +628,6 @@ impl GridWorld {
                     }
                     Pi.insert(s.clone(), prob_per_action);
                 }
-
-                //println!("{:?}", Pi);
 
 
                 let a = self.select_action(&Pi.get(&s).unwrap());

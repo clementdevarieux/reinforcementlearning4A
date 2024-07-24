@@ -118,14 +118,14 @@ fn get_nested_hashmap(chemin: &str) -> HashMap<i32, HashMap<i32, f32>> {
 }
 
 fn main() {
+    //permet de tout lancer d'un coup et save les resultats intermédiaires dans un fichier results/results.csv, dans le dossier "2024-07-23" et le dossier results/Pi_values
     //run_all_and_save::run_all_and_save();
 
     let vector = get_vector("./results/Pi_values/6d9acd28-70a5-4bd0-a130-3fffbcac9173_2024-07-24_20-09-23_GridWorld_policy_iteration_2");
     let hashmap = get_hashmap("./results/Pi_values/6d9acd28-70a5-4bd0-a130-3fffbcac9173_2024-07-24_20-09-23_GridWorld_monte_carlo_off_policy_3");
-    let hashmap_chelou = get_nested_hashmap("./results/Pi_values/6d9acd28-70a5-4bd0-a130-3fffbcac9173_2024-07-24_20-09-23_LineWorld_monte_carlo_fv_on_policy_3");
+    let random_hashmap = get_nested_hashmap("./results/Pi_values/6d9acd28-70a5-4bd0-a130-3fffbcac9173_2024-07-24_20-09-23_LineWorld_monte_carlo_fv_on_policy_3");
 
-    println!("{:?}",hashmap_chelou);
     let mut grid = Env::LineWorld::LineWorld::init();
-    grid.run_game_random_hashmap(hashmap_chelou);
+    grid.run_game_random_hashmap(random_hashmap);
 
 }
